@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xournalpp\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-03 23:34+0000\n"
-"PO-Revision-Date: 2020-05-03 23:35\n"
+"POT-Creation-Date: 2020-05-05 20:21+0000\n"
+"PO-Revision-Date: 2020-05-05 20:28\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Basque\n"
 "Language: eu_ES\n"
@@ -1607,31 +1607,17 @@ msgstr ""
 msgid "<b>... or select already used Image:</b>"
 msgstr "<b>... edo hautatu lehendik erabilitako irudia:</b>"
 
-#: ../ui/pageTemplate.glade:256
+#: ../ui/pageTemplate.glade:244
 msgid "<b>Background Color</b>"
 msgstr "<b>Atzeko planoaren kolorea</b>"
 
-#: ../ui/pageTemplate.glade:269
+#: ../ui/pageTemplate.glade:257
 msgid "<b>Background</b>"
 msgstr "<b>Atzeko planoa</b>"
 
 #: ../ui/toolbarCustomizeDialog.glade:141
 msgid "<b>Color</b>"
 msgstr "<b>Kolorea</b>"
-
-#: ../ui/pageTemplate.glade:110
-msgid "<b>Configure Xournal++ Template Page</b>\n"
-"This settings will be used if you create a new document"
-msgstr "<b>Konfiguratu Xournal++ txantiloi orria</b>\n"
-"Ezarpen hau erabiliko da dokumentu berria sortzen baduzu"
-
-#: ../ui/pageTemplate.glade:241 ../ui/pageTemplate.glade:282
-msgid "<b>Copy last page</b>\n"
-"Use the settings above\n"
-"for the fist Page"
-msgstr "<b>Kopiatu azken orria</b>\n"
-"Erabili goiko ezarpenak\n"
-"lehenengo orrirako"
 
 #: ../ui/toolbarCustomizeDialog.glade:86
 msgid "<b>Default Tools</b>"
@@ -1659,7 +1645,7 @@ msgid "<b>Fill transparency settings</b>\n"
 msgstr "<b>Bete gardentasun ezarpenak</b>\n"
 "Hautatu gardentasuna betetze-kolorerako"
 
-#: ../ui/pageTemplate.glade:132
+#: ../ui/pageTemplate.glade:134
 msgid "<b>Page size</b>"
 msgstr "<b>Orriaren tamaina</b>"
 
@@ -1877,13 +1863,21 @@ msgstr "Koloreak"
 msgid "Configure Page Template"
 msgstr "Konfiguratu orriaren txantiloia"
 
-#: ../ui/pageTemplate.glade:185
-msgid "Copy last page settings"
-msgstr "Kopiatu azken orriaren ezarpenak"
+#: ../ui/pageTemplate.glade:18
+msgid "Configure new page template"
+msgstr ""
 
-#: ../ui/pageTemplate.glade:296
-msgid "Copy last page size"
-msgstr "Kopiatu azken orriaren tamaina"
+#: ../ui/pageTemplate.glade:186
+msgid "Copy current page background instead"
+msgstr ""
+
+#: ../ui/pageTemplate.glade:268
+msgid "Copy current page size instead"
+msgstr ""
+
+#: ../ui/pageTemplate.glade:191
+msgid "Copy the background of the current page instead of using the background set above."
+msgstr ""
 
 #: ../ui/exportSettings.glade:158
 msgid "Current page"
@@ -2293,10 +2287,6 @@ msgstr "Irteerako gailua"
 msgid "P_revious annotated Page"
 msgstr "Aurreko oharpen orria"
 
-#: ../ui/pageTemplate.glade:18
-msgid "Page Template"
-msgstr "Orriaren txantiloia"
-
 #: ../ui/exportSettings.glade:175
 msgid "Pages:"
 msgstr "Orriak:"
@@ -2411,7 +2401,7 @@ msgstr "Korritze-barrak"
 msgid "Scrolling outside the page"
 msgstr "Orritik kanpora korritzen"
 
-#: ../ui/pageTemplate.glade:174
+#: ../ui/pageTemplate.glade:176
 msgid "Select Background Color"
 msgstr "Hautatu atzeko planoaren kolorea"
 
@@ -2531,6 +2521,10 @@ msgstr "Erregelaren unitatea cm da"
 msgid "These settings take only effect if the experimental input system is activated"
 msgstr "Ezarpen hauek bakarrik izango dute eragina sarrerako sistema esperimentala aktibatuta dagoenean"
 
+#: ../ui/pageTemplate.glade:113
+msgid "These settings will be used for new pages"
+msgstr ""
+
 #: ../ui/settings.glade:646
 msgid "This is an experimental feature! Use it with care."
 msgstr "Hau eginbide esperimentala da! Erabili kontu handiz."
@@ -2555,6 +2549,10 @@ msgstr "Saiatu lehenengo objektuak hautatzen."
 #: ../ui/settings.glade:3624 ../ui/settings.glade:3654
 msgid "Try to select object first; if nothing selected then show floating toolbox if enabled."
 msgstr "Saiatu lehenengo objektua hautatzen; ezer hautatuta ez badago, erakutsi tresna-barra mugikorra gaituta badago."
+
+#: ../ui/pageTemplate.glade:273
+msgid "Use the current page size instead of the page size above."
+msgstr ""
 
 #: ../ui/settings.glade:3252
 msgid "Usually 0 or 1"
@@ -2848,7 +2846,7 @@ msgstr "_oso fina"
 msgid "_whiteout"
 msgstr "_tinta zuzentzailea"
 
-#: ../ui/pageTemplate.glade:158
+#: ../ui/pageTemplate.glade:159
 msgid "change"
 msgstr "aldatu"
 
@@ -2864,7 +2862,7 @@ msgstr "gaituta,"
 msgid "every"
 msgstr "maiztasuna"
 
-#: ../ui/pageTemplate.glade:51
+#: ../ui/pageTemplate.glade:53
 msgid "load from file"
 msgstr "kargatu fitxategitik"
 
@@ -2882,7 +2880,7 @@ msgstr "pixel"
 msgid "s <i>(after which the touchscreen will be reactivated again)</i>"
 msgstr "s <i>(ondoren, ukipen-pantaila berriro aktibatuko da)</i>"
 
-#: ../ui/pageTemplate.glade:37
+#: ../ui/pageTemplate.glade:39
 msgid "save to file"
 msgstr "gorde fitxategira"
 
