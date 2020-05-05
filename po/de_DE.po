@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xournalpp\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-03 23:34+0000\n"
-"PO-Revision-Date: 2020-05-03 23:35\n"
+"POT-Creation-Date: 2020-05-05 20:21+0000\n"
+"PO-Revision-Date: 2020-05-05 20:28\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -1607,31 +1607,17 @@ msgstr "30"
 msgid "<b>... or select already used Image:</b>"
 msgstr "<b>... oder wählen Sie ein bereits verwendetes Bild:</b>"
 
-#: ../ui/pageTemplate.glade:256
+#: ../ui/pageTemplate.glade:244
 msgid "<b>Background Color</b>"
 msgstr "<b>Hintergrundfarbe</b>"
 
-#: ../ui/pageTemplate.glade:269
+#: ../ui/pageTemplate.glade:257
 msgid "<b>Background</b>"
 msgstr "<b>Hintergrund</b>"
 
 #: ../ui/toolbarCustomizeDialog.glade:141
 msgid "<b>Color</b>"
 msgstr "<b>Farbe</b>"
-
-#: ../ui/pageTemplate.glade:110
-msgid "<b>Configure Xournal++ Template Page</b>\n"
-"This settings will be used if you create a new document"
-msgstr "<b>Xournal++ Seitenvorlage konfigurieren</b>\n"
-"Diese Einstellungen werden für neue Dokumente verwendet"
-
-#: ../ui/pageTemplate.glade:241 ../ui/pageTemplate.glade:282
-msgid "<b>Copy last page</b>\n"
-"Use the settings above\n"
-"for the fist Page"
-msgstr "<b>Einstellungen der letzten Seite verwenden</b>\n"
-"Die Einstellungen oben werden\n"
-" für die erste Seite verwendet"
 
 #: ../ui/toolbarCustomizeDialog.glade:86
 msgid "<b>Default Tools</b>"
@@ -1660,7 +1646,7 @@ msgid "<b>Fill transparency settings</b>\n"
 msgstr "<b>Füllung Transparenz Einstellungen</b>\n"
 "Wählen der Transparenz für die Füllfarbe"
 
-#: ../ui/pageTemplate.glade:132
+#: ../ui/pageTemplate.glade:134
 msgid "<b>Page size</b>"
 msgstr "<b>Seitengröße</b>"
 
@@ -1878,13 +1864,21 @@ msgstr "Farben"
 msgid "Configure Page Template"
 msgstr "Seitenvorlage konfigurieren"
 
-#: ../ui/pageTemplate.glade:185
-msgid "Copy last page settings"
-msgstr "Einstellungen der letzten Seite kopieren"
+#: ../ui/pageTemplate.glade:18
+msgid "Configure new page template"
+msgstr ""
 
-#: ../ui/pageTemplate.glade:296
-msgid "Copy last page size"
-msgstr "Größe der letzten Seite kopieren"
+#: ../ui/pageTemplate.glade:186
+msgid "Copy current page background instead"
+msgstr ""
+
+#: ../ui/pageTemplate.glade:268
+msgid "Copy current page size instead"
+msgstr ""
+
+#: ../ui/pageTemplate.glade:191
+msgid "Copy the background of the current page instead of using the background set above."
+msgstr ""
 
 #: ../ui/exportSettings.glade:158
 msgid "Current page"
@@ -2294,10 +2288,6 @@ msgstr "Ausgabegerät"
 msgid "P_revious annotated Page"
 msgstr "Vorherige beschriftete Seite"
 
-#: ../ui/pageTemplate.glade:18
-msgid "Page Template"
-msgstr "Seitenvorlage"
-
 #: ../ui/exportSettings.glade:175
 msgid "Pages:"
 msgstr "Seiten:"
@@ -2412,7 +2402,7 @@ msgstr "Bildlaufleisten"
 msgid "Scrolling outside the page"
 msgstr "Scrollen über die Seitenränder hinaus"
 
-#: ../ui/pageTemplate.glade:174
+#: ../ui/pageTemplate.glade:176
 msgid "Select Background Color"
 msgstr "Hintergrundfarbe wählen"
 
@@ -2532,6 +2522,10 @@ msgstr "Die Einheit des Lineals ist cm"
 msgid "These settings take only effect if the experimental input system is activated"
 msgstr "Die folgenden Einstellungen zeigen nur Wirkung wenn das experimentelle Eingabesystem aktiviert ist"
 
+#: ../ui/pageTemplate.glade:113
+msgid "These settings will be used for new pages"
+msgstr ""
+
 #: ../ui/settings.glade:646
 msgid "This is an experimental feature! Use it with care."
 msgstr "Dies ist eine experimentelle Funktion! Vorsichtig verwenden."
@@ -2556,6 +2550,10 @@ msgstr "Versuche Objekt als erstes auszuwählen."
 #: ../ui/settings.glade:3624 ../ui/settings.glade:3654
 msgid "Try to select object first; if nothing selected then show floating toolbox if enabled."
 msgstr "Versuche Objekt als erstes auszuwählen; Wenn nichts ausgewählt wurde, zeige die schwebende Werkzeugbox."
+
+#: ../ui/pageTemplate.glade:273
+msgid "Use the current page size instead of the page size above."
+msgstr ""
 
 #: ../ui/settings.glade:3252
 msgid "Usually 0 or 1"
@@ -2849,7 +2847,7 @@ msgstr "_sehr dünn"
 msgid "_whiteout"
 msgstr "_weiß übermalen"
 
-#: ../ui/pageTemplate.glade:158
+#: ../ui/pageTemplate.glade:159
 msgid "change"
 msgstr "ändern"
 
@@ -2865,7 +2863,7 @@ msgstr "aktiviert,"
 msgid "every"
 msgstr "alle"
 
-#: ../ui/pageTemplate.glade:51
+#: ../ui/pageTemplate.glade:53
 msgid "load from file"
 msgstr "Von Datei laden"
 
@@ -2883,7 +2881,7 @@ msgstr "Pixeln hinzu"
 msgid "s <i>(after which the touchscreen will be reactivated again)</i>"
 msgstr "s <i>(nach denen der Touchscreen reaktiviert wird)</i>"
 
-#: ../ui/pageTemplate.glade:37
+#: ../ui/pageTemplate.glade:39
 msgid "save to file"
 msgstr "Speichere in Datei"
 
