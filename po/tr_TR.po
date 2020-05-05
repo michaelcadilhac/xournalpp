@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xournalpp\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-03 23:34+0000\n"
-"PO-Revision-Date: 2020-05-03 23:35\n"
+"POT-Creation-Date: 2020-05-05 20:21+0000\n"
+"PO-Revision-Date: 2020-05-05 20:27\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Turkish\n"
 "Language: tr_TR\n"
@@ -1607,31 +1607,17 @@ msgstr ""
 msgid "<b>... or select already used Image:</b>"
 msgstr "<b>... veya önceden kullanılmış Resmi seçin:</b>"
 
-#: ../ui/pageTemplate.glade:256
+#: ../ui/pageTemplate.glade:244
 msgid "<b>Background Color</b>"
 msgstr "<b>Arka plan Rengi</b>"
 
-#: ../ui/pageTemplate.glade:269
+#: ../ui/pageTemplate.glade:257
 msgid "<b>Background</b>"
 msgstr "<b>Arka plan</b>"
 
 #: ../ui/toolbarCustomizeDialog.glade:141
 msgid "<b>Color</b>"
 msgstr "<b>Renk</b>"
-
-#: ../ui/pageTemplate.glade:110
-msgid "<b>Configure Xournal++ Template Page</b>\n"
-"This settings will be used if you create a new document"
-msgstr "<b>Xournal++ Şablon Sayfasını Yapılandır</b>\n"
-"Yeni bir belge oluşturursanız bu ayarlar kullanılır"
-
-#: ../ui/pageTemplate.glade:241 ../ui/pageTemplate.glade:282
-msgid "<b>Copy last page</b>\n"
-"Use the settings above\n"
-"for the fist Page"
-msgstr "<b>Son sayfayı kopyala</b>\n"
-"İlk Sayfa için yukarıdaki\n"
-"ayarları kullanın"
 
 #: ../ui/toolbarCustomizeDialog.glade:86
 msgid "<b>Default Tools</b>"
@@ -1659,7 +1645,7 @@ msgid "<b>Fill transparency settings</b>\n"
 msgstr "<b>Dolgu saydamlığı ayarları</b>\n"
 "Dolgu rengi için saydamlığı seç"
 
-#: ../ui/pageTemplate.glade:132
+#: ../ui/pageTemplate.glade:134
 msgid "<b>Page size</b>"
 msgstr "<b>Sayfa boyutu</b>"
 
@@ -1877,13 +1863,21 @@ msgstr "Renkler"
 msgid "Configure Page Template"
 msgstr "Sayfa Şablonlarını Yapılandır"
 
-#: ../ui/pageTemplate.glade:185
-msgid "Copy last page settings"
-msgstr "Son sayfa ayarlarını kopyala"
+#: ../ui/pageTemplate.glade:18
+msgid "Configure new page template"
+msgstr ""
 
-#: ../ui/pageTemplate.glade:296
-msgid "Copy last page size"
-msgstr "Son sayfa boyutunu kopyala"
+#: ../ui/pageTemplate.glade:186
+msgid "Copy current page background instead"
+msgstr ""
+
+#: ../ui/pageTemplate.glade:268
+msgid "Copy current page size instead"
+msgstr ""
+
+#: ../ui/pageTemplate.glade:191
+msgid "Copy the background of the current page instead of using the background set above."
+msgstr ""
 
 #: ../ui/exportSettings.glade:158
 msgid "Current page"
@@ -2293,10 +2287,6 @@ msgstr "Çıktı Aygıtı"
 msgid "P_revious annotated Page"
 msgstr "_Önceki açıklamalı Sayfa"
 
-#: ../ui/pageTemplate.glade:18
-msgid "Page Template"
-msgstr "Sayfa Şablonu"
-
 #: ../ui/exportSettings.glade:175
 msgid "Pages:"
 msgstr "Sayfalar:"
@@ -2411,7 +2401,7 @@ msgstr "Kaydırma çubukları"
 msgid "Scrolling outside the page"
 msgstr "Sayfanın dışına kaydırma"
 
-#: ../ui/pageTemplate.glade:174
+#: ../ui/pageTemplate.glade:176
 msgid "Select Background Color"
 msgstr "Arka Plan Rengini Seç"
 
@@ -2531,6 +2521,10 @@ msgstr "Cetvel birimi cm'dir"
 msgid "These settings take only effect if the experimental input system is activated"
 msgstr "Bu ayarlar yalnızca deneysel giriş sistemi etkinleştirildiyse etkili olur"
 
+#: ../ui/pageTemplate.glade:113
+msgid "These settings will be used for new pages"
+msgstr ""
+
 #: ../ui/settings.glade:646
 msgid "This is an experimental feature! Use it with care."
 msgstr "Bu deneysel bir özellik! Dikkatle kullanın."
@@ -2555,6 +2549,10 @@ msgstr "Önce nesneyi seçmeyi deneyin."
 #: ../ui/settings.glade:3624 ../ui/settings.glade:3654
 msgid "Try to select object first; if nothing selected then show floating toolbox if enabled."
 msgstr "Önce nesneyi seçmeyi deneyin; seçili bir şey yoksa, etkinse kayan araç kutusunu gösterir."
+
+#: ../ui/pageTemplate.glade:273
+msgid "Use the current page size instead of the page size above."
+msgstr ""
 
 #: ../ui/settings.glade:3252
 msgid "Usually 0 or 1"
@@ -2848,7 +2846,7 @@ msgstr "_çok iyi"
 msgid "_whiteout"
 msgstr "_olmadan"
 
-#: ../ui/pageTemplate.glade:158
+#: ../ui/pageTemplate.glade:159
 msgid "change"
 msgstr "değiştir"
 
@@ -2864,7 +2862,7 @@ msgstr "etkin,"
 msgid "every"
 msgstr "her"
 
-#: ../ui/pageTemplate.glade:51
+#: ../ui/pageTemplate.glade:53
 msgid "load from file"
 msgstr "dosyadan yükle"
 
@@ -2882,7 +2880,7 @@ msgstr "pikseller"
 msgid "s <i>(after which the touchscreen will be reactivated again)</i>"
 msgstr "s <i>(bundan sonra dokunmatik ekran tekrar etkinleştirilecek)</i>"
 
-#: ../ui/pageTemplate.glade:37
+#: ../ui/pageTemplate.glade:39
 msgid "save to file"
 msgstr "dosyaya kaydet"
 
