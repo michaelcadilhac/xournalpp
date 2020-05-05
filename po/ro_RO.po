@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xournalpp\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-03 23:34+0000\n"
-"PO-Revision-Date: 2020-05-03 23:35\n"
+"POT-Creation-Date: 2020-05-05 20:21+0000\n"
+"PO-Revision-Date: 2020-05-05 20:27\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Romanian\n"
 "Language: ro_RO\n"
@@ -94,16 +94,16 @@ msgstr "Atributul \"{1}\" nu a putut fi analizat ca int, valoarea este \"{2}\""
 
 #: ../src/control/xojfile/LoadHandlerHelper.cpp:114
 msgid "Attribute \"{1}\" could not be parsed as int, the value is nullptr"
-msgstr ""
+msgstr "Atributul \"{1}\" nu a putut fi analizat ca int, valoarea este de nullptr"
 
 #: ../src/control/xojfile/LoadHandlerHelper.cpp:159
 #: ../src/control/xojfile/LoadHandlerHelper.cpp:179
 msgid "Attribute \"{1}\" could not be parsed as size_t, the value is \"{2}\""
-msgstr ""
+msgstr "Atributul \"{1}\" nu a putut fi analizat ca size_t, valoarea este \"{2}\""
 
 #: ../src/control/xojfile/LoadHandlerHelper.cpp:152
 msgid "Attribute \"{1}\" could not be parsed as size_t, the value is nullptr"
-msgstr ""
+msgstr "Atributul \"{1}\" nu a putut fi analizat ca size_t, valoarea este de nullptr"
 
 #: ../src/control/xojfile/LoadHandlerHelper.cpp:46
 msgid "Attribute color not set!"
@@ -250,60 +250,64 @@ msgstr "Atașarea nu a putut fi deschisă: {1}. Mesaj de eroare: {2}"
 
 #: ../src/control/xojfile/LoadHandler.cpp:154
 msgid "Could not open file: \"{1}\""
-msgstr ""
+msgstr "Nu s-a putut deschide fișierul: \"{1}\""
 
 #: ../src/gui/MainWindow.cpp:86
 msgid "Could not parse custom toolbar.ini file: {1}\n"
 "Toolbars will not be available"
-msgstr ""
+msgstr "Nu s-a putut analiza fișierul personalizat toolbar.ini: {1}\n"
+"Barele de instrumente nu vor fi disponibile"
 
 #: ../src/gui/MainWindow.cpp:77
 msgid "Could not parse general toolbar.ini file: {1}\n"
 "No Toolbars will be available"
-msgstr ""
+msgstr "Nu s-a putut analiza fișierul general toolbar.ini: {1}\n"
+"Barele de instrumente nu vor fi disponibile"
 
 #: ../src/control/xojfile/LoadHandler.cpp:340
 #: ../src/control/xojfile/LoadHandler.cpp:364
 msgid "Could not read image: {1}. Error message: {2}"
-msgstr ""
+msgstr "Imaginea nu a putut fi citită: {1}. Mesaj de eroare: {2}"
 
 #: ../src/undo/UndoRedoHandler.cpp:137
 msgid "Could not redo \"{1}\"\n"
 "Something went wrong… Please write a bug report…"
-msgstr ""
+msgstr "Nu s-a putut reface \"{1}\"\n"
+"Ceva nu a mers bine… Te rugăm să scrii un raport de eroare…"
 
 #: ../src/gui/dialog/toolbarCustomize/ToolbarAdapter.cpp:169
 msgid "Could not remove tool item from Toolbar {1} on position {2}"
-msgstr ""
+msgstr "Nu s-a putut elimina elementul din bara de instrumente {1} pe poziția {2}"
 
 #: ../src/gui/dialog/toolbarCustomize/ToolbarAdapter.cpp:164
 msgid "Could not remove tool item {1} from Toolbar {2} on position {3}"
-msgstr ""
+msgstr "Nu s-a putut elimina elementul {1} din bara de instrumente {2} pe poziția {3}"
 
 #: ../src/control/Control.cpp:228
 msgid "Could not rename autosave file from \"{1}\" to \"{2}\": {3}"
-msgstr ""
+msgstr "Nu s-a putut redenumi fișierul autosave de la \"{1}\" la \"{2}\": {3}"
 
 #: ../src/control/LatexController.cpp:110
 msgid "Could not save .tex file: {1}"
-msgstr ""
+msgstr "Nu s-a putut salva fișierul .tex: {1}"
 
 #: ../src/control/LatexController.cpp:129
 msgid "Could not start pdflatex: {1} (exit code: {2})"
-msgstr ""
+msgstr "Nu s-a putut porni pdflatex: {1} (cod de ieșire: {2})"
 
 #: ../src/undo/UndoRedoHandler.cpp:108
 msgid "Could not undo \"{1}\"\n"
 "Something went wrong… Please write a bug report…"
-msgstr ""
+msgstr "Nu s-a putut anula \"{1}\"\n"
+"Ceva nu a mers bine… Te rugăm să scrii un raport de eroare…"
 
 #: ../src/control/xojfile/SaveHandler.cpp:232
 msgid "Could not write background \"{1}\", {2}"
-msgstr ""
+msgstr "Nu s-a putut scrie fundalul \"{1}\", {2}"
 
 #: ../src/control/xojfile/SaveHandler.cpp:328
 msgid "Could not write background \"{1}\". Continuing anyway."
-msgstr ""
+msgstr "Nu s-a putut scrie fundalul \"{1}\". Continuând mai departe."
 
 #: ../src/gui/toolbarMenubar/ToolPageLayer.cpp:74
 msgid "Create new layer"
@@ -504,7 +508,8 @@ msgstr "Eroare: {1}"
 #: ../src/control/LatexController.cpp:84
 msgid "Error: {1}\n"
 "Could not find kpsewhich in PATH; please install kpsewhich and put it on path."
-msgstr ""
+msgstr "Eroare: {1}\n"
+"Nu s-a putut găsi kpsewhich în PATH; Vă rugăm să instalați kpsewhich și să îl includeți în PATH."
 
 #: ../src/control/XournalMain.cpp:170
 msgid "Errorlog cannot be deleted. You have to do it manually.\n"
@@ -548,7 +553,7 @@ msgstr "Mergi înainte"
 
 #: ../src/control/XournalMain.cpp:310
 msgid "Get version of xournalpp"
-msgstr ""
+msgstr "Obține versiunea xournalpp"
 
 #: ../src/gui/toolbarMenubar/ToolMenuHandler.cpp:365
 msgid "Go to first page"
@@ -801,29 +806,29 @@ msgstr "Fundal PDF lipsă"
 
 #: ../src/control/XournalMain.cpp:287
 msgid "PDF file successfully created"
-msgstr ""
+msgstr "Fişierul PDF a fost creat cu succes"
 
 #: ../src/control/jobs/CustomExportJob.cpp:20
 #: ../src/control/jobs/PdfExportJob.cpp:13
 #: ../src/control/stockdlg/XojOpenDlg.cpp:42
 msgid "PDF files"
-msgstr ""
+msgstr "Fișiere PDF"
 
 #: ../src/control/XournalMain.cpp:306
 msgid "PDF output filename"
-msgstr ""
+msgstr "Nume pentru fișier PDF"
 
 #: ../src/control/jobs/CustomExportJob.cpp:21
 msgid "PDF with plain background"
-msgstr ""
+msgstr "PDF cu fundal simplu"
 
 #: ../src/control/jobs/CustomExportJob.cpp:22
 msgid "PNG graphics"
-msgstr ""
+msgstr "Grafice PNG"
 
 #: ../src/control/jobs/CustomExportJob.cpp:23
 msgid "PNG with transparent background"
-msgstr ""
+msgstr "PNG cu fundal transparent"
 
 #: ../src/gui/toolbarMenubar/ToolPageSpinner.cpp:42
 msgid "Page"
@@ -831,11 +836,11 @@ msgstr "Pagină"
 
 #: ../src/gui/sidebar/previews/page/SidebarPreviewPages.cpp:62
 msgid "Page Preview"
-msgstr ""
+msgstr "Previzualizare a paginei"
 
 #: ../src/undo/PageBackgroundChangedUndoAction.cpp:81
 msgid "Page background changed"
-msgstr ""
+msgstr "Pagina de fundal a fost modificată"
 
 #: ../src/undo/InsertDeletePageUndoAction.cpp:98
 msgid "Page deleted"
@@ -887,7 +892,7 @@ msgstr "Mod de prezentare"
 
 #: ../src/gui/toolbarMenubar/ToolMenuHandler.cpp:320
 msgid "Print"
-msgstr ""
+msgstr "Imprimă"
 
 #: ../src/gui/toolbarMenubar/ToolMenuHandler.cpp:426
 msgid "Record Audio / Stop Recording"
@@ -1300,46 +1305,47 @@ msgstr "Scrie text"
 
 #: ../src/control/xojfile/LoadHandler.cpp:896
 msgid "Wrong count of points ({1})"
-msgstr ""
+msgstr "Număr greșit de puncte ({1})"
 
 #: ../src/control/xojfile/LoadHandler.cpp:906
 msgid "Wrong number of points, got {1}, expected {2}"
-msgstr ""
+msgstr "Număr greșit de puncte, obținut {1}, așteptat {2}"
 
 #: ../src/control/xojfile/LoadHandler.cpp:218
 msgid "XML Parser error: {1}"
-msgstr ""
+msgstr "Eroare la analiza XML: {1}"
 
 #: ../src/control/jobs/CustomExportJob.cpp:26
 msgid "Xournal (Compatibility)"
-msgstr ""
+msgstr "Xournal (Compatibilitate)"
 
 #: ../src/control/stockdlg/XojOpenDlg.cpp:50
 msgid "Xournal files"
-msgstr ""
+msgstr "Fișiere Xournal"
 
 #: ../src/control/XournalMain.cpp:189
 msgid "Xournal++ crashed last time. Would you like to restore the last edited file?"
-msgstr ""
+msgstr "Xournal++ s-a prăbușit ultima dată. Doriți să restaurați ultimul fișier editat?"
 
 #: ../src/control/Control.cpp:2281 ../src/control/stockdlg/XojOpenDlg.cpp:57
 msgid "Xournal++ files"
-msgstr ""
+msgstr "Fișiere Xournal++"
 
 #: ../src/control/stockdlg/XojOpenDlg.cpp:64
 #: ../src/gui/dialog/PageTemplateDialog.cpp:89
 msgid "Xournal++ template"
-msgstr ""
+msgstr "Xournal++ șablon"
 
 #: ../src/gui/dialog/toolbarCustomize/CustomizeableColorList.cpp:19
 #: ../src/gui/toolbarMenubar/model/ToolbarColorNames.cpp:112
 msgid "Yellow"
-msgstr ""
+msgstr "Galben"
 
 #: ../src/control/PageBackgroundChangeController.cpp:186
 msgid "You don't have any PDF pages to select from. Cancel operation.\n"
 "Please select another background type: Menu \"Journal\" → \"Configure Page Template\"."
-msgstr ""
+msgstr "Nu ai nicio pagină PDF de selectat. Anulează operațiunea.\n"
+"Selectează un alt tip de fundal: Meniul \"Jurnal\" → \"Configurează șablonul de pagină\"."
 
 #: ../src/control/XournalMain.cpp:138
 msgid "You're using {1}/{2} branch. Send Bugreport will direct you to this repo's issue tracker."
@@ -1349,7 +1355,9 @@ msgstr ""
 msgid "Your current document does not contain PDF Page no {1}\n"
 "Would you like to insert this page?\n\n"
 "Tip: You can select Journal → Paper Background → PDF Background to insert a PDF page."
-msgstr ""
+msgstr "Documentul dvs. nu conține pagina PDF nr. {1}\n"
+"Doriți să inserați această pagină?\n\n"
+"Sfat: Puteţi selecta Journal → Fundal Pagină → PDF Fundal pentru a insera o pagină PDF."
 
 #: ../src/gui/toolbarMenubar/ToolMenuHandler.cpp:359
 msgid "Zoom fit to screen"
@@ -1593,37 +1601,23 @@ msgstr "1,00"
 
 #: ../ui/settings.glade:2292
 msgid "30"
-msgstr ""
+msgstr "30"
 
 #: ../ui/images.glade:88
 msgid "<b>... or select already used Image:</b>"
 msgstr "<b>... sau selectați imaginea deja folosită:</b>"
 
-#: ../ui/pageTemplate.glade:256
+#: ../ui/pageTemplate.glade:244
 msgid "<b>Background Color</b>"
 msgstr "<b>Culoare de fundal</b>"
 
-#: ../ui/pageTemplate.glade:269
+#: ../ui/pageTemplate.glade:257
 msgid "<b>Background</b>"
 msgstr "<b>Fundal</b>"
 
 #: ../ui/toolbarCustomizeDialog.glade:141
 msgid "<b>Color</b>"
 msgstr "<b>Culoare</b>"
-
-#: ../ui/pageTemplate.glade:110
-msgid "<b>Configure Xournal++ Template Page</b>\n"
-"This settings will be used if you create a new document"
-msgstr "<b>Configurați Xournal++ Pagina de șabloane</b>\n"
-"Aceste setări vor fi utilizate dacă creați un nou document"
-
-#: ../ui/pageTemplate.glade:241 ../ui/pageTemplate.glade:282
-msgid "<b>Copy last page</b>\n"
-"Use the settings above\n"
-"for the fist Page"
-msgstr "<b>Copiază ultima pagină</b>\n"
-"Utilizează setările de mai sus\n"
-"pentru prima pagină"
 
 #: ../ui/toolbarCustomizeDialog.glade:86
 msgid "<b>Default Tools</b>"
@@ -1650,7 +1644,7 @@ msgid "<b>Fill transparency settings</b>\n"
 "Select transparency for fill color"
 msgstr ""
 
-#: ../ui/pageTemplate.glade:132
+#: ../ui/pageTemplate.glade:134
 msgid "<b>Page size</b>"
 msgstr ""
 
@@ -1864,13 +1858,21 @@ msgstr ""
 msgid "Configure Page Template"
 msgstr "Configuraţi pagina șablon"
 
-#: ../ui/pageTemplate.glade:185
-msgid "Copy last page settings"
-msgstr "Copiază setările ultimei pagini"
+#: ../ui/pageTemplate.glade:18
+msgid "Configure new page template"
+msgstr ""
 
-#: ../ui/pageTemplate.glade:296
-msgid "Copy last page size"
-msgstr "Copiază dimensiunea ultimei pagini"
+#: ../ui/pageTemplate.glade:186
+msgid "Copy current page background instead"
+msgstr ""
+
+#: ../ui/pageTemplate.glade:268
+msgid "Copy current page size instead"
+msgstr ""
+
+#: ../ui/pageTemplate.glade:191
+msgid "Copy the background of the current page instead of using the background set above."
+msgstr ""
 
 #: ../ui/exportSettings.glade:158
 msgid "Current page"
@@ -2277,10 +2279,6 @@ msgstr ""
 msgid "P_revious annotated Page"
 msgstr ""
 
-#: ../ui/pageTemplate.glade:18
-msgid "Page Template"
-msgstr ""
-
 #: ../ui/exportSettings.glade:175
 msgid "Pages:"
 msgstr ""
@@ -2394,7 +2392,7 @@ msgstr "Bare de derulare"
 msgid "Scrolling outside the page"
 msgstr "Derulare în afara paginii"
 
-#: ../ui/pageTemplate.glade:174
+#: ../ui/pageTemplate.glade:176
 msgid "Select Background Color"
 msgstr "Selectaţi culoarea de fundal"
 
@@ -2514,6 +2512,10 @@ msgstr ""
 msgid "These settings take only effect if the experimental input system is activated"
 msgstr ""
 
+#: ../ui/pageTemplate.glade:113
+msgid "These settings will be used for new pages"
+msgstr ""
+
 #: ../ui/settings.glade:646
 msgid "This is an experimental feature! Use it with care."
 msgstr ""
@@ -2538,6 +2540,10 @@ msgstr "Încercați mai întâi să selectați obiectul."
 #: ../ui/settings.glade:3624 ../ui/settings.glade:3654
 msgid "Try to select object first; if nothing selected then show floating toolbox if enabled."
 msgstr "Încearcă să selectezi obiectul mai întâi; dacă nimic selectat nu afișează toolbox plutitor dacă este activat."
+
+#: ../ui/pageTemplate.glade:273
+msgid "Use the current page size instead of the page size above."
+msgstr ""
 
 #: ../ui/settings.glade:3252
 msgid "Usually 0 or 1"
@@ -2831,7 +2837,7 @@ msgstr ""
 msgid "_whiteout"
 msgstr ""
 
-#: ../ui/pageTemplate.glade:158
+#: ../ui/pageTemplate.glade:159
 msgid "change"
 msgstr ""
 
@@ -2847,7 +2853,7 @@ msgstr ""
 msgid "every"
 msgstr ""
 
-#: ../ui/pageTemplate.glade:51
+#: ../ui/pageTemplate.glade:53
 msgid "load from file"
 msgstr ""
 
@@ -2865,7 +2871,7 @@ msgstr ""
 msgid "s <i>(after which the touchscreen will be reactivated again)</i>"
 msgstr ""
 
-#: ../ui/pageTemplate.glade:37
+#: ../ui/pageTemplate.glade:39
 msgid "save to file"
 msgstr "salvează în fișier"
 
