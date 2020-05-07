@@ -62,6 +62,7 @@ ButtonConfigGui::ButtonConfigGui(GladeSearchpath* gladeSearchPath, GtkWidget* w,
     ADD_TYPE_CB("stretch", _("Vertical space"), TOOL_VERTICAL_SPACE);
     ADD_TYPE_CB("lasso", _("Select region"), TOOL_SELECT_REGION);
     ADD_TYPE_CB("rect-select", _("Select rectangle"), TOOL_SELECT_RECT);
+    ADD_TYPE_CB("laser", _("Laser"), TOOL_LASER);
     ADD_TYPE_CB("hand", _("Hand"), TOOL_HAND);
     ADD_TYPE_CB("floating_toolbox", _("Floating Toolbox (experimental)"), TOOL_FLOATING_TOOLBOX);
 
@@ -283,6 +284,7 @@ void ButtonConfigGui::enableDisableTools() {
         case TOOL_SELECT_RECT:
         case TOOL_SELECT_REGION:
         case TOOL_VERTICAL_SPACE:
+      case TOOL_LASER:
         case TOOL_HAND:
             gtk_widget_set_visible(cbThickness, false);
             gtk_widget_set_visible(colorButton, false);

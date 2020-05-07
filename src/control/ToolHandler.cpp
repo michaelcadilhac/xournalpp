@@ -71,6 +71,9 @@ void ToolHandler::initTools() {
     tools[TOOL_VERTICAL_SPACE - TOOL_PEN] =
             std::make_unique<Tool>("verticalSpace", TOOL_VERTICAL_SPACE, 0x000000, TOOL_CAP_NONE, nullptr);
 
+    tools[TOOL_LASER - TOOL_PEN] =
+      std::make_unique<Tool>("laser", TOOL_LASER, 0x000000, TOOL_CAP_NONE, nullptr);
+
     tools[TOOL_HAND - TOOL_PEN] = std::make_unique<Tool>("hand", TOOL_HAND, 0x000000, TOOL_CAP_NONE, nullptr);
 
     tools[TOOL_PLAY_OBJECT - TOOL_PEN] =
