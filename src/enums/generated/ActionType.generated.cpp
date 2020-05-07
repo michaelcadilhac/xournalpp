@@ -201,6 +201,10 @@ auto ActionType_fromString(const string& value) -> ActionType {
         return ACTION_TOOL_VERTICAL_SPACE;
     }
 
+    if (value == "ACTION_TOOL_LASER") {
+        return ACTION_TOOL_LASER;
+    }
+
     if (value == "ACTION_TOOL_HAND") {
         return ACTION_TOOL_HAND;
     }
@@ -773,6 +777,10 @@ auto ActionType_toString(ActionType value) -> string {
 
     if (value == ACTION_TOOL_VERTICAL_SPACE) {
         return "ACTION_TOOL_VERTICAL_SPACE";
+    }
+
+    if (value == ACTION_TOOL_LASER) {
+        return "ACTION_TOOL_LASER";
     }
 
     if (value == ACTION_TOOL_HAND) {

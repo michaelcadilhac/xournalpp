@@ -1444,6 +1444,18 @@
                           </object>
                         </child>
                         <child>
+                          <object class="GtkCheckMenuItem" id="menuToolsLaser">
+                            <property name="name">menuToolsLaser</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">P_ointer Tool</property>
+                            <property name="use_underline">True</property>
+                            <property name="draw_as_radio">True</property>
+                            <signal name="toggled" handler="ACTION_TOOL_LASER" swapped="no"/>
+                            <accelerator key="l" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
+                          </object>
+                        </child>
+                        <child>
                           <object class="GtkCheckMenuItem" id="menuToolsHand">
                             <property name="name">menuToolsHand</property>
                             <property name="visible">True</property>

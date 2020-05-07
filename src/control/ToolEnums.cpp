@@ -115,6 +115,8 @@ auto toolTypeToString(ToolType type) -> string {
             return "PlayObject";
         case TOOL_VERTICAL_SPACE:
             return "verticalSpace";
+      case TOOL_LASER:
+        return "laser";
         case TOOL_HAND:
             return "hand";
         case TOOL_DRAW_RECT:
@@ -161,6 +163,9 @@ auto toolTypeFromString(const string& type) -> ToolType {
     }
     if (type == "verticalSpace") {
         return TOOL_VERTICAL_SPACE;
+    }
+    if (type == "laser") {
+      return TOOL_LASER;
     }
     if (type == "hand") {
         return TOOL_HAND;
