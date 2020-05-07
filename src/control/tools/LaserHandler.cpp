@@ -71,7 +71,6 @@ void LaserHandler::onButtonReleaseEvent(const PositionInputData& pos) {
       pow(xournal->getZoom(), 2);
         if (lengthSqrd < pow((strokeFilterIgnoreLength * dpmm), 2) &&
         pos.timestamp - this->startStrokeTime < strokeFilterIgnoreTime) {
-
       if (pos.timestamp - LaserHandler::lastStrokeTime > strokeFilterSuccessiveTime) {
         this->userTapped = true;
         LaserHandler::lastStrokeTime = pos.timestamp;
