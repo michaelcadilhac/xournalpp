@@ -18,6 +18,7 @@
 #include "control/tools/EraseHandler.h"
 #include "control/tools/ImageHandler.h"
 #include "control/tools/InputHandler.h"
+#include "control/tools/LaserHandler.h"
 #include "control/tools/RectangleHandler.h"
 #include "control/tools/RulerHandler.h"
 #include "control/tools/Selection.h"
@@ -370,6 +371,10 @@ auto XojPageView::onButtonPressEvent(const PositionInputData& pos) -> bool {
         wy += std::lround(pos.y) + this->getY();
 
         control->getWindow()->floatingToolbox->show(wx, wy);
+    } else if (h->getToolType() == TOOL_LASER) {
+      delete this->inputHandler;
+      this->inputHandler = new LaserHandler(this->xournal, this, getPage());
+      this->inputHandler->onButtonPressEvent(pos);
     }
 
     this->startStrokeTime = pos.timestamp;
