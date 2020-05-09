@@ -97,6 +97,14 @@ auto XojPageView::getLastVisibleTime() -> int {
     return this->lastVisibleTime;
 }
 
+auto XojPageView::getUserTapped() const -> bool {
+    return this->userTapped;
+}
+
+void XojPageView::cancelTap() {
+    this->userTapped = false;
+}
+
 void XojPageView::deleteViewBuffer() {
     g_mutex_lock(&this->drawingMutex);
     if (this->crBuffer) {
@@ -364,6 +372,10 @@ auto XojPageView::onButtonPressEvent(const PositionInputData& pos) -> bool {
         control->getWindow()->floatingToolbox->show(wx, wy);
     }
 
+    this->startStrokeTime = pos.timestamp;
+    this->buttonDownPoint.x = x;
+    this->buttonDownPoint.y = y;
+
     return true;
 }
 
@@ -481,36 +493,58 @@ auto XojPageView::onMotionNotifyEvent(const PositionInputData& pos) -> bool {
 
 auto XojPageView::onButtonReleaseEvent(const PositionInputData& pos) -> bool {
     Control* control = xournal->getControl();
+    Settings* settings = control->getSettings();
+
+    // Test for tap.
+    if (settings->getStrokeFilterEnabled())
+    {
+        int strokeFilterIgnoreTime = 0, strokeFilterSuccessiveTime = 0;
+        double strokeFilterIgnoreLength = NAN;
+        settings->getStrokeFilter(&strokeFilterIgnoreTime, &strokeFilterIgnoreLength, &strokeFilterSuccessiveTime);
+        double dpmm = settings->getDisplayDpi() / 25.4;
+        double zoom = xournal->getZoom();
+        double lengthSqrd = (pow(((pos.x / zoom) - (this->buttonDownPoint.x)), 2) +
+                             pow(((pos.y / zoom) - (this->buttonDownPoint.y)), 2)) *
+            pow(xournal->getZoom(), 2);
+
+        this->userTapped = (lengthSqrd < pow((strokeFilterIgnoreLength * dpmm), 2)) &&
+            (pos.timestamp - this->startStrokeTime < strokeFilterIgnoreTime) &&
+            (pos.timestamp - this->lastStrokeTime > strokeFilterSuccessiveTime);
+        this->lastStrokeTime = pos.timestamp;
+    }
 
     if (this->inputHandler) {
+        // Pass the event to the input handler.
         this->inputHandler->onButtonReleaseEvent(pos);
-
-        if (this->inputHandler->userTapped) {
-            bool doAction = control->getSettings()->getDoActionOnStrokeFiltered();
-            if (control->getSettings()->getTrySelectOnStrokeFiltered()) {
-                double zoom = xournal->getZoom();
-                SelectObject select(this);
-                if (select.at(pos.x / zoom, pos.y / zoom)) {
-                    doAction = false;  // selection made.. no action.
-                }
-            }
-
-            if (doAction)  // pop up a menu
-            {
-                gint wx = 0, wy = 0;
-                GtkWidget* widget = xournal->getWidget();
-                gtk_widget_translate_coordinates(widget, gtk_widget_get_toplevel(widget), 0, 0, &wx, &wy);
-                wx += std::lround(pos.x + this->getX());
-                wy += std::lround(pos.y + this->getY());
-                control->getWindow()->floatingToolbox->show(wx, wy);
-            }
-        }
 
         ToolHandler* h = control->getToolHandler();
         bool isDrawingTypeSpline = h->getDrawingType() == DRAWING_TYPE_SPLINE;
         if (!isDrawingTypeSpline || !this->inputHandler->getStroke()) {  // The Spline Tool finalizes drawing manually
             delete this->inputHandler;
             this->inputHandler = nullptr;
+        }
+    }
+
+    // Even if we had set userTapped, it may be that it was deactivated by onButtonReleaseEvent.
+    if (this->userTapped) {
+        bool doAction = settings->getDoActionOnStrokeFiltered();
+        if (settings->getTrySelectOnStrokeFiltered()) {
+            double zoom = xournal->getZoom();
+            SelectObject select(this);
+            if (select.at(pos.x / zoom, pos.y / zoom)) {
+                doAction = false;  // selection made.. no action.
+            }
+        }
+
+        if (doAction)  // pop up a menu
+        {
+            // TODO: Cancel eraser, etc.
+            gint wx = 0, wy = 0;
+            GtkWidget* widget = xournal->getWidget();
+            gtk_widget_translate_coordinates(widget, gtk_widget_get_toplevel(widget), 0, 0, &wx, &wy);
+            wx += std::lround(pos.x + this->getX());
+            wy += std::lround(pos.y + this->getY());
+            control->getWindow()->floatingToolbox->show(wx, wy);
         }
     }
 

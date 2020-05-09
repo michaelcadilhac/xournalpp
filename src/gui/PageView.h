@@ -15,6 +15,7 @@
 #include "model/PageListener.h"
 #include "model/PageRef.h"
 #include "model/TexImage.h"
+#include "model/Point.h"
 
 #include "Layout.h"
 #include "Range.h"
@@ -143,6 +144,9 @@ public:
 
     Rectangle<double> getRect() const;
 
+    bool getUserTapped() const;
+    void cancelTap();
+
 public:  // event handler
     bool onButtonPressEvent(const PositionInputData& pos);
     bool onButtonReleaseEvent(const PositionInputData& pos);
@@ -246,4 +250,10 @@ private:
     friend class PlayObject;
     // only function allowed to setX(), setY(), setMappedRowCol():
     friend void Layout::layoutPages(int width, int height);
+
+    // to filter out short strokes (usually the user tapping on the page to select it)
+    guint32 startStrokeTime{};
+    guint32 lastStrokeTime;
+    bool userTapped = false;
+    Point buttonDownPoint;
 };

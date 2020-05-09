@@ -10,9 +10,6 @@
 #include "undo/InsertUndoAction.h"
 
 
-guint32 BaseStrokeHandler::lastStrokeTime;  // persist for next stroke
-
-
 BaseStrokeHandler::BaseStrokeHandler(XournalView* xournal, XojPageView* redrawable, const PageRef& page, bool flipShift,
                                      bool flipControl):
         InputHandler(xournal, redrawable, page),
@@ -109,38 +106,12 @@ void BaseStrokeHandler::onButtonReleaseEvent(const PositionInputData& pos) {
     Control* control = xournal->getControl();
     Settings* settings = control->getSettings();
 
-    if (settings->getStrokeFilterEnabled())  // Note: For simple strokes see StrokeHandler which has a slightly
-                                             // different version of this filter.  See //!
-    {
-        int strokeFilterIgnoreTime = 0, strokeFilterSuccessiveTime = 0;
-        double strokeFilterIgnoreLength = NAN;
-
-        settings->getStrokeFilter(&strokeFilterIgnoreTime, &strokeFilterIgnoreLength, &strokeFilterSuccessiveTime);
-        double dpmm = settings->getDisplayDpi() / 25.4;
-
-        double zoom = xournal->getZoom();
-        double lengthSqrd = (pow(((pos.x / zoom) - (this->buttonDownPoint.x)), 2) +
-                             pow(((pos.y / zoom) - (this->buttonDownPoint.y)), 2)) *
-                            pow(xournal->getZoom(), 2);
-
-        if (lengthSqrd < pow((strokeFilterIgnoreLength * dpmm), 2) &&
-            pos.timestamp - this->startStrokeTime < strokeFilterIgnoreTime) {
-            if (pos.timestamp - BaseStrokeHandler::lastStrokeTime > strokeFilterSuccessiveTime) {
-                // stroke not being added to layer... delete here.
-                delete stroke;
-                stroke = nullptr;
-                this->userTapped = true;
-
-                BaseStrokeHandler::lastStrokeTime = pos.timestamp;
-
-                xournal->getCursor()->updateCursor();
-
-                return;
-            }
-        }
-        BaseStrokeHandler::lastStrokeTime = pos.timestamp;
+    if (redrawable->getUserTapped ()) {
+      delete stroke;
+      stroke = nullptr;
+      xournal->getCursor()->updateCursor();
+      return;
     }
-
 
     // This is not a valid stroke
     if (stroke->getPointCount() < 2) {
@@ -177,8 +148,6 @@ void BaseStrokeHandler::onButtonPressEvent(const PositionInputData& pos) {
     if (!stroke) {
         createStroke(Point(this->buttonDownPoint.x, this->buttonDownPoint.y));
     }
-
-    this->startStrokeTime = pos.timestamp;
 }
 
 void BaseStrokeHandler::onButtonDoublePressEvent(const PositionInputData& pos) {

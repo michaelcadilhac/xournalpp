@@ -205,39 +205,16 @@ void SplineHandler::onButtonReleaseEvent(const PositionInputData& pos) {
         return;
     }
 
-    Control* control = xournal->getControl();
-    Settings* settings = control->getSettings();
-
-    if (settings->getStrokeFilterEnabled() && this->getKnotCount() < 2)  // Note: Mostly same as in BaseStrokeHandler
-    {
-        int strokeFilterIgnoreTime = 0, strokeFilterSuccessiveTime = 0;
-        double strokeFilterIgnoreLength = NAN;
-
-        settings->getStrokeFilter(&strokeFilterIgnoreTime, &strokeFilterIgnoreLength, &strokeFilterSuccessiveTime);
-        double dpmm = settings->getDisplayDpi() / 25.4;
-
-        double zoom = xournal->getZoom();
-        double lengthSqrd = (pow(((pos.x / zoom) - (this->buttonDownPoint.x)), 2) +
-                             pow(((pos.y / zoom) - (this->buttonDownPoint.y)), 2)) *
-                            pow(xournal->getZoom(), 2);
-
-        if (lengthSqrd < pow((strokeFilterIgnoreLength * dpmm), 2) &&
-            pos.timestamp - this->startStrokeTime < strokeFilterIgnoreTime) {
-            if (pos.timestamp - SplineHandler::lastStrokeTime > strokeFilterSuccessiveTime) {
-                // spline not being added to layer... delete here.
-                this->finalizeSpline();
-                this->knots.clear();
-                this->tangents.clear();
-                this->userTapped = true;
-
-                SplineHandler::lastStrokeTime = pos.timestamp;
-
-                xournal->getCursor()->updateCursor();
-
-                return;
-            }
+    if (redrawable->getUserTapped ()) {
+        if (this->getKnotCount() >= 2)
+            redrawable->cancelTap ();
+        else {
+            this->finalizeSpline();
+            this->knots.clear();
+            this->tangents.clear();
+            xournal->getCursor()->updateCursor();
+            return;
         }
-        SplineHandler::lastStrokeTime = pos.timestamp;
     }
 }
 

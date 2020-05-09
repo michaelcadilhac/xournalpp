@@ -17,9 +17,6 @@
 #include "config-features.h"
 
 
-guint32 StrokeHandler::lastStrokeTime;  // persist for next stroke
-
-
 StrokeHandler::StrokeHandler(XournalView* xournal, XojPageView* redrawable, const PageRef& page):
         InputHandler(xournal, redrawable, page), surfMask(nullptr), crMask(nullptr), reco(nullptr) {}
 
@@ -116,40 +113,15 @@ void StrokeHandler::onButtonReleaseEvent(const PositionInputData& pos) {
     }
 
     Control* control = xournal->getControl();
-    Settings* settings = control->getSettings();
 
-    if (settings->getStrokeFilterEnabled())  // Note: For shape tools see BaseStrokeHandler which has a slightly
-                                             // different version of this filter. See //!
+    if (redrawable->getUserTapped())
     {
-        int strokeFilterIgnoreTime = 0, strokeFilterSuccessiveTime = 0;
-        double strokeFilterIgnoreLength = NAN;
-
-        settings->getStrokeFilter(&strokeFilterIgnoreTime, &strokeFilterIgnoreLength, &strokeFilterSuccessiveTime);
-        double dpmm = settings->getDisplayDpi() / 25.4;
-
-        double zoom = xournal->getZoom();
-        double lengthSqrd = (pow(((pos.x / zoom) - (this->buttonDownPoint.x)), 2) +
-                             pow(((pos.y / zoom) - (this->buttonDownPoint.y)), 2)) *
-                            pow(xournal->getZoom(), 2);
-
-        if (lengthSqrd < pow((strokeFilterIgnoreLength * dpmm), 2) &&
-            pos.timestamp - this->startStrokeTime < strokeFilterIgnoreTime) {
-            if (pos.timestamp - StrokeHandler::lastStrokeTime > strokeFilterSuccessiveTime) {
-                // stroke not being added to layer... delete here but clear first!
-
-                this->redrawable->rerenderRect(stroke->getX(), stroke->getY(), stroke->getElementWidth(),
-                                               stroke->getElementHeight());  // clear onMotionNotifyEvent drawing //!
-
-                delete stroke;
-                stroke = nullptr;
-                this->userTapped = true;
-
-                StrokeHandler::lastStrokeTime = pos.timestamp;
-
-                return;
-            }
-        }
-        StrokeHandler::lastStrokeTime = pos.timestamp;
+      // stroke not being added to layer... delete here but clear first!
+      this->redrawable->rerenderRect(stroke->getX(), stroke->getY(), stroke->getElementWidth(),
+                                     stroke->getElementHeight());  // clear onMotionNotifyEvent drawing //!
+      delete stroke;
+      stroke = nullptr;
+      return;
     }
 
     // Backward compatibility and also easier to handle for me;-)
@@ -274,8 +246,6 @@ void StrokeHandler::onButtonPressEvent(const PositionInputData& pos) {
 
         createStroke(Point(this->buttonDownPoint.x, this->buttonDownPoint.y));
     }
-
-    this->startStrokeTime = pos.timestamp;
 }
 
 void StrokeHandler::onButtonDoublePressEvent(const PositionInputData& pos) {
