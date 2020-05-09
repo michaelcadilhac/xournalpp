@@ -26,7 +26,9 @@ LaserHandler::~LaserHandler() {}
 void LaserHandler::draw(cairo_t* cr) {
   if (!this->enabled)
     return;
+  int dpiScaleFactor = xournal->getDpiScaleFactor();
   cairo_save(cr);
+  cairo_scale (cr, dpiScaleFactor, dpiScaleFactor);
   cairo_set_line_width(cr, LASER_RADIUS * 2);
   cairo_arc(cr, this->x, this->y, LASER_RADIUS, 0.0, 2 * M_PI);
   const double r = ((this->color >> 24) & 0xFF) / 255.0;
@@ -84,17 +86,17 @@ void LaserHandler::onButtonReleaseEvent(const PositionInputData& pos) {
 
 Rectangle<double> LaserHandler::getDrawBounds() {
   // Overapproximate the draw bounds to avoid floating point inaccuracies.
-  const double cb = LASER_RADIUS + 1.0;
-  // Get the bounds relative the the containing page.
-  return {this->x - cb + redrawable->getX(),
-          this->y - cb + redrawable->getY(),
+  const double cb = (LASER_RADIUS + 1.0);
+  // Get the bounds relative the the containing page.  This is scaled afterwise
+  // using dpiScaleFactor, so shouldn't do it here.
+  return {this->x  - cb + redrawable->getX(),
+          this->y  - cb + redrawable->getY(),
           cb * 2, cb * 2};
 
 }
 
 void LaserHandler::repaint () {
   const Rectangle<double>&& bounds = this->getDrawBounds();
-
   // Use the main widget rather than the page rerenderRect, it's much faster.
   gtk_widget_queue_draw_area (xournal->getWidget(),
                               bounds.x, bounds.y, bounds.width, bounds.height);
