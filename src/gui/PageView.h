@@ -185,6 +185,14 @@ private:
 
     void setMappedRowCol(int row, int col);  // row, column assigned by mapper during layout.
 
+    static bool finalizeInputLastTapCallback (XojPageView *me);
+    void finalizeInputLastTap ();
+    void finalizeInput (const PositionInputData& pos,
+                        InputHandler *& inputHandler);
+
+    void passReleaseEventToInputHandler (const PositionInputData &pos,
+                                         InputHandler*& inputHandler);
+
 
 private:
     PageRef page;
@@ -252,8 +260,13 @@ private:
     friend void Layout::layoutPages(int width, int height);
 
     // to filter out short strokes (usually the user tapping on the page to select it)
-    guint32 startStrokeTime{};
-    guint32 lastStrokeTime;
+    guint32 startStrokeTime = 0;
+    guint32 lastStrokeTime = 0;
     bool userTapped = false;
     Point buttonDownPoint;
+
+    int delayedFinalizeInputLastTap = 0;
+
+    InputHandler *lastTapInputHandler = nullptr;
+    PositionInputData lastTap;
 };

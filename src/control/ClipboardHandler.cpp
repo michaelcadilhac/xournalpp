@@ -226,6 +226,8 @@ auto ClipboardHandler::copy() -> bool {
 
     g_string_free(svgString, true);
 
+    clipboardUpdated (nullptr);
+
     return true;
 }
 

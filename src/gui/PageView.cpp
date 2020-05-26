@@ -66,6 +66,8 @@ XojPageView::XojPageView(XournalView* xournal, const PageRef& page) {
 
     this->eraser = new EraseHandler(xournal->getControl()->getUndoRedoHandler(), xournal->getControl()->getDocument(),
                                     this->page, xournal->getControl()->getToolHandler(), this);
+    this->lastTap.timestamp = 0;
+    this->buttonDownPoint.x = -1;
 }
 
 XojPageView::~XojPageView() {
@@ -470,6 +472,8 @@ void XojPageView::resetShapeRecognizer() {
 }
 
 auto XojPageView::onMotionNotifyEvent(const PositionInputData& pos) -> bool {
+    if (this->buttonDownPoint.x < 0) // Only forward event if the button is down
+        return false;
     double zoom = xournal->getZoom();
     double x = pos.x / zoom;
     double y = pos.y / zoom;
@@ -496,60 +500,131 @@ auto XojPageView::onMotionNotifyEvent(const PositionInputData& pos) -> bool {
     return false;
 }
 
+#include <iostream>
+#define _D(L) while (0) {}
+//#define _D(L) std::cout << __func__ << ":" << __LINE__ << ":" << L << std::endl;
+
 auto XojPageView::onButtonReleaseEvent(const PositionInputData& pos) -> bool {
     Control* control = xournal->getControl();
     Settings* settings = control->getSettings();
 
-    // Test for tap.
+    // Test for double tap.
+    bool tap = false, twoTaps = false;
+
+    // Get settings
+    int strokeFilterIgnoreTime = 0, strokeFilterSuccessiveTime = 0;
+    double strokeFilterIgnoreLength = NAN;
+    settings->getStrokeFilter(&strokeFilterIgnoreTime, &strokeFilterIgnoreLength, &strokeFilterSuccessiveTime);
+
+    // Test for single tap.
     if (settings->getStrokeFilterEnabled())
     {
-        int strokeFilterIgnoreTime = 0, strokeFilterSuccessiveTime = 0;
-        double strokeFilterIgnoreLength = NAN;
-        settings->getStrokeFilter(&strokeFilterIgnoreTime, &strokeFilterIgnoreLength, &strokeFilterSuccessiveTime);
-        double dpmm = settings->getDisplayDpi() / 25.4;
-        double zoom = xournal->getZoom();
-        double lengthSqrd = (pow(((pos.x / zoom) - (this->buttonDownPoint.x)), 2) +
-                             pow(((pos.y / zoom) - (this->buttonDownPoint.y)), 2)) *
-            pow(xournal->getZoom(), 2);
-
-        this->userTapped = (lengthSqrd < pow((strokeFilterIgnoreLength * dpmm), 2)) &&
-            (pos.timestamp - this->startStrokeTime < strokeFilterIgnoreTime) &&
-            (pos.timestamp - this->lastStrokeTime > strokeFilterSuccessiveTime);
-        this->lastStrokeTime = pos.timestamp;
-    }
-
-    if (this->inputHandler) {
-        // Pass the event to the input handler.
-        this->inputHandler->onButtonReleaseEvent(pos);
-
-        ToolHandler* h = control->getToolHandler();
-        bool isDrawingTypeSpline = h->getDrawingType() == DRAWING_TYPE_SPLINE;
-        if (!isDrawingTypeSpline || !this->inputHandler->getStroke()) {  // The Spline Tool finalizes drawing manually
-            delete this->inputHandler;
-            this->inputHandler = nullptr;
-        }
-    }
-
-    // Even if we had set userTapped, it may be that it was deactivated by onButtonReleaseEvent.
-    if (this->userTapped) {
-        bool doAction = settings->getDoActionOnStrokeFiltered();
-        if (settings->getTrySelectOnStrokeFiltered()) {
+        // If this stroke started within strokeFilterSuccessiveTime of the previous one
+        // and the previous one wasn't a tap, then don't consider this a tap.
+        _D ("start: " << this->startStrokeTime << " last: " << this->lastStrokeTime
+            << " lstTap: " << (this->lastTap.timestamp ? 1 : 0));
+        if ((this->startStrokeTime - this->lastStrokeTime > strokeFilterSuccessiveTime) ||
+            this->lastTap.timestamp) {
+            double dpmm = settings->getDisplayDpi() / 25.4;
             double zoom = xournal->getZoom();
-            SelectObject select(this);
-            if (select.at(pos.x / zoom, pos.y / zoom)) {
-                doAction = false;  // selection made.. no action.
+            double lengthSqrd = (pow(((pos.x / zoom) - (this->buttonDownPoint.x)), 2) +
+                                 pow(((pos.y / zoom) - (this->buttonDownPoint.y)), 2)) *
+                pow(xournal->getZoom(), 2);
+
+            tap = (lengthSqrd < pow((strokeFilterIgnoreLength * dpmm), 2)) &&
+                (pos.timestamp - this->startStrokeTime < strokeFilterIgnoreTime);
+            if (tap && this->lastTap.timestamp) { // There's a previous tap.
+                // Compute distance between end of previous tap and beginnig of this one
+                lengthSqrd =  (pow(((this->lastTap.x / zoom) - (this->buttonDownPoint.x)), 2) +
+                               pow(((this->lastTap.y / zoom) - (this->buttonDownPoint.y)), 2)) *
+                    pow(xournal->getZoom(), 2);
+                twoTaps = (lengthSqrd < pow((strokeFilterIgnoreLength * dpmm), 2));
+                // If there was a tap, and a previous tap, but they're too far,
+                // don't consider this a tap; the user is probably just doing dot dot dots.
+                if (!twoTaps) tap = false;
             }
         }
+    }
 
-        if (doAction)  // pop up a menu
-        {
-            // TODO: Cancel eraser, etc.
-            gint wx = 0, wy = 0;
-            GtkWidget* widget = xournal->getWidget();
-            gtk_widget_translate_coordinates(widget, gtk_widget_get_toplevel(widget), 0, 0, &wx, &wy);
-            wx += std::lround(pos.x + this->getX());
-            wy += std::lround(pos.y + this->getY());
-            control->getWindow()->floatingToolbox->show(wx, wy);
+    // Flag that button is no longer down
+    this->buttonDownPoint.x = -1;
+    this->buttonDownPoint.y = -1;
+    // Save time of the end stroke.
+    this->lastStrokeTime = pos.timestamp;
+
+    if (twoTaps) { // delayed tap is not finalized -> double tap
+        _D ("second tap");
+        this->userTapped = true;
+        // Finalize the first tap, with userTapped set to true before.
+        g_source_remove (this->delayedFinalizeInputLastTap);
+        this->finalizeInputLastTap ();
+        this->finalizeInput (pos, this->inputHandler);
+    } else if (tap) {
+        _D ("first tap");
+        // First tap
+        // It may still be that there was a previous tap not finalized if it's too far
+        if (this->delayedFinalizeInputLastTap) {
+            _D ("canceling a delayed");
+            g_source_remove (this->delayedFinalizeInputLastTap);
+            this->finalizeInputLastTap ();
+        }
+        // Now queue this tap.
+        this->lastTapInputHandler = this->inputHandler;
+        this->inputHandler = nullptr;
+        this->lastTap = pos;
+        this->delayedFinalizeInputLastTap = gdk_threads_add_timeout(
+            strokeFilterSuccessiveTime,
+            reinterpret_cast<GSourceFunc> (finalizeInputLastTapCallback), this);
+        return false;
+    } else {
+        _D ("not a tap");
+        if (this->delayedFinalizeInputLastTap) {
+            _D ("canceling a delayed");
+            g_source_remove (this->delayedFinalizeInputLastTap);
+            this->finalizeInputLastTap ();
+        }
+        _D ("just finalizing");
+        this->finalizeInput (pos, this->inputHandler);
+        return false;
+    }
+
+    if (!this->userTapped)
+        return false;
+    this->userTapped = false;
+    // Double tap
+    bool doAction = settings->getDoActionOnStrokeFiltered();
+    if (settings->getTrySelectOnStrokeFiltered()) {
+        double zoom = xournal->getZoom();
+        SelectObject select(this);
+        if (select.at(pos.x / zoom, pos.y / zoom)) {
+            doAction = false;  // selection made.. no action.
+        }
+    }
+
+    if (doAction)  // pop up a menu
+    {
+        // TODO: Cancel eraser, etc.
+        gint wx = 0, wy = 0;
+        GtkWidget* widget = xournal->getWidget();
+        gtk_widget_translate_coordinates(widget, gtk_widget_get_toplevel(widget), 0, 0, &wx, &wy);
+        wx += std::lround(pos.x + this->getX());
+        wy += std::lround(pos.y + this->getY());
+        control->getWindow()->floatingToolbox->show(wx, wy);
+    }
+    return false;
+}
+
+void XojPageView::finalizeInput (const PositionInputData& pos,
+                                 InputHandler*& inputHandler) {
+    if (inputHandler) {
+        // Pass the event to the input handler.
+        inputHandler->onButtonReleaseEvent(pos);
+
+        ToolHandler* h = xournal->getControl()->getToolHandler();
+        bool isDrawingTypeSpline = h->getDrawingType() == DRAWING_TYPE_SPLINE;
+        if (!isDrawingTypeSpline || !inputHandler->getStroke()) {  // The Spline Tool finalizes drawing manually
+            delete inputHandler;
+            inputHandler = nullptr;
         }
     }
 
@@ -562,26 +637,35 @@ auto XojPageView::onButtonReleaseEvent(const PositionInputData& pos) -> bool {
     }
 
     if (this->verticalSpace) {
-        control->getUndoRedoHandler()->addUndoAction(this->verticalSpace->finalize());
+        this->xournal->getControl()->getUndoRedoHandler()->addUndoAction(this->verticalSpace->finalize());
         delete this->verticalSpace;
         this->verticalSpace = nullptr;
     }
 
     if (this->selection) {
         if (this->selection->finalize(this->page)) {
-            xournal->setSelection(new EditSelection(control->getUndoRedoHandler(), this->selection, this));
+            this->xournal->setSelection(new EditSelection(this->xournal->getControl()->getUndoRedoHandler(), this->selection, this));
             delete this->selection;
             this->selection = nullptr;
         } else {
             delete this->selection;
             this->selection = nullptr;
 
-            repaintPage();
+            this->repaintPage();
         }
     } else if (this->textEditor) {
         this->textEditor->mouseReleased();
     }
+}
 
+void XojPageView::finalizeInputLastTap () {
+    this->finalizeInput (this->lastTap, this->lastTapInputHandler);
+    this->lastTap.timestamp = 0;
+    this->delayedFinalizeInputLastTap = 0;
+}
+
+bool XojPageView::finalizeInputLastTapCallback (XojPageView *page) {
+    page->finalizeInputLastTap ();
     return false;
 }
 
@@ -827,6 +911,12 @@ void XojPageView::paintPageSync(cairo_t* cr, GdkRectangle* rect) {
         int dpiScaleFactor = xournal->getDpiScaleFactor();
         cairo_scale(cr, 1.0 / dpiScaleFactor, 1.0 / dpiScaleFactor);
         this->inputHandler->draw(cr);
+    }
+
+    if (this->lastTapInputHandler) {
+        int dpiScaleFactor = xournal->getDpiScaleFactor();
+        cairo_scale(cr, 1.0 / dpiScaleFactor, 1.0 / dpiScaleFactor);
+        this->lastTapInputHandler->draw(cr);
     }
 }
 
