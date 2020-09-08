@@ -21,74 +21,14 @@
 #include "control/Tool.h"
 #include "model/Font.h"
 
-#include "Path.h"
+#include "LatexSettings.h"
+#include "SettingsEnums.h"
+#include "filesystem.h"
 
 constexpr auto DEFAULT_GRID_SIZE = 14.17;
 
-enum Buttons {
-    BUTTON_ERASER,
-    BUTTON_MIDDLE,
-    BUTTON_RIGHT,
-    BUTTON_TOUCH,
-    BUTTON_DEFAULT,
-    BUTTON_STYLUS,
-    BUTTON_STYLUS2,
-    BUTTON_COUNT
-};
-
-constexpr auto buttonToString(Buttons button) -> const char* {
-    switch (button) {
-        case BUTTON_ERASER:
-            return "eraser";
-        case BUTTON_MIDDLE:
-            return "middle";
-        case BUTTON_RIGHT:
-            return "right";
-        case BUTTON_TOUCH:
-            return "touch";
-        case BUTTON_DEFAULT:
-            return "default";
-        case BUTTON_STYLUS:
-            return "stylus";
-        case BUTTON_STYLUS2:
-            return "stylus2";
-        default:
-            return "unknown";
-    }
-}
-
-enum AttributeType {
-    ATTRIBUTE_TYPE_NONE,
-    ATTRIBUTE_TYPE_STRING,
-    ATTRIBUTE_TYPE_INT,
-    ATTRIBUTE_TYPE_DOUBLE,
-    ATTRIBUTE_TYPE_INT_HEX,
-    ATTRIBUTE_TYPE_BOOLEAN,
-};
-
-// use this as a bit flag
-enum ScrollbarHideType {
-    SCROLLBAR_HIDE_NONE = 0,
-    SCROLLBAR_HIDE_HORIZONTAL = 1 << 1,
-    SCROLLBAR_HIDE_VERTICAL = 1 << 2,
-    SCROLLBAR_HIDE_BOTH = SCROLLBAR_HIDE_HORIZONTAL | SCROLLBAR_HIDE_VERTICAL
-};
-
-/**
- * The user-selectable device types
- */
-enum class InputDeviceTypeOption {
-    Disabled = 0,
-    Mouse = 1,
-    Pen = 2,
-    Eraser = 3,
-    Touchscreen = 4,
-    MouseKeyboardCombo = 5,
-};
-
 class ButtonConfig;
 class InputDevice;
-
 
 class SAttribute {
 public:
@@ -144,7 +84,7 @@ private:
 
 class Settings {
 public:
-    /*[[implicit]]*/ Settings(Path filename);
+    /*[[implicit]]*/ Settings(fs::path filepath);
     Settings(const Settings& settings) = delete;
     void operator=(const Settings& settings) = delete;
     virtual ~Settings();
@@ -219,17 +159,17 @@ public:
     /**
      * The last saved path
      */
-    void setLastSavePath(Path p);
-    Path const& getLastSavePath() const;
+    void setLastSavePath(fs::path p);
+    fs::path const& getLastSavePath() const;
 
     /**
      * The last open path
      */
-    void setLastOpenPath(Path p);
-    Path const& getLastOpenPath() const;
+    void setLastOpenPath(fs::path p);
+    fs::path const& getLastOpenPath() const;
 
-    void setLastImagePath(const Path& p);
-    Path const& getLastImagePath() const;
+    void setLastImagePath(const fs::path& p);
+    fs::path const& getLastImagePath() const;
 
     void setMainWndSize(int width, int height);
     void setMainWndMaximized(bool max);
@@ -239,6 +179,9 @@ public:
 
     bool isSidebarVisible() const;
     void setSidebarVisible(bool visible);
+
+    bool isToolbarVisible() const;
+    void setToolbarVisible(bool visible);
 
     int getSidebarWidth() const;
     void setSidebarWidth(int width);
@@ -318,8 +261,8 @@ public:
     double getSnapGridSize() const;
     void setSnapGridSize(double gridSize);
 
-    bool isShowBigCursor() const;
-    void setShowBigCursor(bool b);
+    StylusCursorType getStylusCursorType() const;
+    void setStylusCursorType(StylusCursorType stylusCursorType);
 
     bool isHighlightPosition() const;
     void setHighlightPosition(bool highlight);
@@ -508,11 +451,13 @@ public:
      */
     void transactionEnd();
 
+    LatexSettings latexSettings{};
+
 private:
     /**
-     *  The config filename
+     *  The config filepath
      */
-    Path filename;
+    fs::path filepath;
 
 private:
     /**
@@ -536,6 +481,11 @@ private:
     bool showSidebar{};
 
     /**
+     *  If the sidebar is visible
+     */
+    bool showToolbar{};
+
+    /**
      *  The Width of the Sidebar
      */
     int sidebarWidth{};
@@ -546,9 +496,9 @@ private:
     bool sidebarOnRight{};
 
     /**
-     *  Show a better visible cursor for pen
+     *  Type of cursor icon to use with a stylus
      */
-    bool showBigCursor{};
+    StylusCursorType stylusCursorType;
 
     /**
      * Show a colored circle around the cursor
@@ -605,17 +555,17 @@ private:
     /**
      *  The last saved folder
      */
-    Path lastSavePath;
+    fs::path lastSavePath;
 
     /**
      *  The last opened folder
      */
-    Path lastOpenPath;
+    fs::path lastOpenPath;
 
     /**
      *  The last "insert image" folder
      */
-    Path lastImagePath;
+    fs::path lastImagePath;
 
     /**
      * The last used font

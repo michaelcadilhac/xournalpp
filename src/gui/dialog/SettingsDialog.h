@@ -17,6 +17,7 @@
 #include "util/audio/DeviceInfo.h"
 
 #include "DeviceClassConfigGui.h"
+#include "LatexSettingsPanel.h"
 
 class ButtonConfigGui;
 
@@ -37,6 +38,7 @@ public:
      */
     void enableWithCheckbox(const string& checkbox, const string& widget);
     void customHandRecognitionToggled();
+    void customStylusIconTypeChanged();
 
 private:
     void load();
@@ -58,4 +60,6 @@ private:
 
     vector<ButtonConfigGui*> buttonConfigs;
     vector<DeviceClassConfigGui*> deviceClassConfigs;
+
+    LatexSettingsPanel latexPanel;
 };

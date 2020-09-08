@@ -18,6 +18,7 @@
 #include "model/TexImage.h"
 #include "model/Text.h"
 
+#include "PathUtil.h"
 #include "i18n.h"
 
 SaveHandler::SaveHandler() {
@@ -81,8 +82,8 @@ void SaveHandler::writeHeader() {
     this->root->addChild(new XmlTextNode("title", std::string{"Xournal++ document - see "} + PROJECT_URL));
 }
 
-auto SaveHandler::getColorStr(int c, unsigned char alpha) -> string {
-    char* str = g_strdup_printf("#%08x", c << 8 | alpha);
+auto SaveHandler::getColorStr(uint32_t c, unsigned char alpha) -> string {
+    char* str = g_strdup_printf("#%08x", c << 8U | alpha);
     string color = str;
     g_free(str);
     return color;
@@ -185,7 +186,7 @@ void SaveHandler::visitLayer(XmlNode* page, Layer* l) {
             image->setAttrib("bottom", i->getY() + i->getElementHeight());
         } else if (e->getType() == ELEMENT_TEXIMAGE) {
             auto* i = dynamic_cast<TexImage*>(e);
-            auto* image = new XmlTexNode("teximage", i->getBinaryData());
+            auto* image = new XmlTexNode("teximage", std::string(i->getBinaryData()));
             layer->addChild(image);
 
             image->setAttrib("text", i->getText().c_str());
@@ -218,24 +219,26 @@ void SaveHandler::visitPage(XmlNode* root, PageRef p, Document* doc, int id) {
 
             if (doc->isAttachPdf()) {
                 background->setAttrib("domain", "attach");
-                Path filename = Path(doc->getFilename().str() + ".bg.pdf");
-                background->setAttrib("filename", filename.str());
+                auto filepath = doc->getFilepath();
+                Util::clearExtensions(filepath);
+                filepath += ".xopp.bg.pdf";
+                background->setAttrib("filename", "bg.pdf");
 
                 GError* error = nullptr;
-                doc->getPdfDocument().save(filename, &error);
+                doc->getPdfDocument().save(filepath, &error);
 
                 if (error) {
                     if (!this->errorMessage.empty()) {
                         this->errorMessage += "\n";
                     }
                     this->errorMessage +=
-                            FS(_F("Could not write background \"{1}\", {2}") % filename.str() % error->message);
+                            FS(_F("Could not write background \"{1}\", {2}") % filepath.string() % error->message);
 
                     g_error_free(error);
                 }
             } else {
                 background->setAttrib("domain", "absolute");
-                background->setAttrib("filename", doc->getPdfFilename().str());
+                background->setAttrib("filename", doc->getPdfFilepath().string());
             }
         }
         background->setAttrib("pageno", p->getPdfPageNr() + 1);
@@ -252,7 +255,7 @@ void SaveHandler::visitPage(XmlNode* root, PageRef p, Document* doc, int id) {
             char* filename = g_strdup_printf("bg_%d.png", this->attachBgId++);
             background->setAttrib("domain", "attach");
             background->setAttrib("filename", filename);
-            p->getBackgroundImage().setFilename(filename);
+            p->getBackgroundImage().setFilepath(filename);
 
             auto* img = new BackgroundImage();
             *img = p->getBackgroundImage();
@@ -262,7 +265,7 @@ void SaveHandler::visitPage(XmlNode* root, PageRef p, Document* doc, int id) {
             p->getBackgroundImage().setCloneId(id);
         } else {
             background->setAttrib("domain", "absolute");
-            background->setAttrib("filename", p->getBackgroundImage().getFilename());
+            background->setAttrib("filename", p->getBackgroundImage().getFilepath().string());
             p->getBackgroundImage().setCloneId(id);
         }
     } else {
@@ -293,15 +296,15 @@ void SaveHandler::writeSolidBackground(XmlNode* background, PageRef p) {
     }
 }
 
-void SaveHandler::saveTo(const Path& filename, ProgressListener* listener) {
-    GzOutputStream out(filename);
+void SaveHandler::saveTo(const fs::path& filepath, ProgressListener* listener) {
+    GzOutputStream out(filepath);
 
     if (!out.getLastError().empty()) {
         this->errorMessage = out.getLastError();
         return;
     }
 
-    saveTo(&out, filename, listener);
+    saveTo(&out, filepath, listener);
 
     out.close();
 
@@ -310,7 +313,7 @@ void SaveHandler::saveTo(const Path& filename, ProgressListener* listener) {
     }
 }
 
-void SaveHandler::saveTo(OutputStream* out, const Path& filename, ProgressListener* listener) {
+void SaveHandler::saveTo(OutputStream* out, const fs::path& filepath, ProgressListener* listener) {
     // XMLNode should be locale-safe ( store doubles using Locale 'C' format
 
     out->write("<?xml version=\"1.0\" standalone=\"no\"?>\n");
@@ -319,13 +322,13 @@ void SaveHandler::saveTo(OutputStream* out, const Path& filename, ProgressListen
     for (GList* l = this->backgroundImages; l != nullptr; l = l->next) {
         auto* img = static_cast<BackgroundImage*>(l->data);
 
-        string tmpfn = filename.str() + "." + img->getFilename();
-        if (!gdk_pixbuf_save(img->getPixbuf(), tmpfn.c_str(), "png", nullptr, nullptr)) {
+        auto tmpfn = (fs::path(filepath) += ".") += img->getFilepath();
+        if (!gdk_pixbuf_save(img->getPixbuf(), tmpfn.u8string().c_str(), "png", nullptr, nullptr)) {
             if (!this->errorMessage.empty()) {
                 this->errorMessage += "\n";
             }
 
-            this->errorMessage += FS(_F("Could not write background \"{1}\". Continuing anyway.") % tmpfn);
+            this->errorMessage += FS(_F("Could not write background \"{1}\". Continuing anyway.") % tmpfn.string());
         }
     }
 }

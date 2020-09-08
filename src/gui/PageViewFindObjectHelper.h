@@ -18,7 +18,9 @@
 
 #include "util/audio/AudioPlayer.h"
 
+#include "PathUtil.h"
 #include "XournalView.h"
+#include "filesystem.h"
 
 class BaseSelectObject {
 public:
@@ -35,12 +37,8 @@ public:
         view->xournal->getControl()->clearSelection();
         matchRect = {gint(x - 10), gint(y - 10), 20, 20};
 
-        for (Layer* l: *view->page->getLayers()) {
-            if (view->page->isLayerVisible(l)) {
-                return checkLayer(l);
-            }
-        }
-        return false;
+        Layer* layer = this->view->getPage()->getSelectedLayer();
+        return checkLayer(layer);
     }
 
 protected:
@@ -156,10 +154,12 @@ protected:
 
             if (!fn.empty()) {
                 if (fn.rfind(G_DIR_SEPARATOR, 0) != 0) {
-                    Path path = Path::fromUri(view->settings->getAudioFolder());
-                    path /= fn;
+                    auto path = Util::fromUri(view->settings->getAudioFolder());
 
-                    fn = path.str();
+                    // Assume path exists
+                    *path /= fn;
+
+                    fn = path->string();
                 }
                 auto* ac = view->getXournal()->getControl()->getAudioController();
                 bool success = ac->startPlayback(fn, (unsigned int)ts);

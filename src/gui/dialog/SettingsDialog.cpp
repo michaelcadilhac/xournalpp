@@ -16,7 +16,8 @@ SettingsDialog::SettingsDialog(GladeSearchpath* gladeSearchPath, Settings* setti
         GladeGui(gladeSearchPath, "settings.glade", "settingsDialog"),
         settings(settings),
         control(control),
-        callib(zoomcallib_new()) {
+        callib(zoomcallib_new()),
+        latexPanel(gladeSearchPath) {
     GtkWidget* vbox = get("zoomVBox");
     g_return_if_fail(vbox != nullptr);
 
@@ -90,6 +91,11 @@ SettingsDialog::SettingsDialog(GladeSearchpath* gladeSearchPath, Settings* setti
             G_CALLBACK(+[](GtkComboBox* comboBox, SettingsDialog* self) { self->customHandRecognitionToggled(); }),
             this);
 
+    g_signal_connect(get("cbStylusCursorType"), "changed", G_CALLBACK(+[](GtkComboBox* comboBox, SettingsDialog* self) {
+                         self->customStylusIconTypeChanged();
+                     }),
+                     this);
+
     gtk_box_pack_start(GTK_BOX(vbox), callib, false, true, 0);
     gtk_widget_show(callib);
 
@@ -109,6 +115,8 @@ SettingsDialog::SettingsDialog(GladeSearchpath* gladeSearchPath, Settings* setti
         gtk_box_pack_end(GTK_BOX(container), label, true, true, 0);
         gtk_widget_show(label);
     }
+
+    gtk_container_add(GTK_CONTAINER(this->get("latexTabBox")), this->latexPanel.get("latexSettingsPanel"));
 }
 
 SettingsDialog::~SettingsDialog() {
@@ -188,6 +196,13 @@ void SettingsDialog::customHandRecognitionToggled() {
     gtk_widget_set_sensitive(get("boxCustomTouchDisableSettings"), touchMethod == 2);
 }
 
+void SettingsDialog::customStylusIconTypeChanged() {
+    GtkWidget* cbStylusCursorType = get("cbStylusCursorType");
+    int stylusCursorType = gtk_combo_box_get_active(GTK_COMBO_BOX(cbStylusCursorType));
+    bool showCursorHighlightOptions = stylusCursorType != STYLUS_CURSOR_NONE;
+    gtk_widget_set_sensitive(get("highlightCursorGrid"), showCursorHighlightOptions);
+}
+
 void SettingsDialog::load() {
     loadCheckbox("cbSettingPresureSensitivity", settings->isPressureSensitivity());
     loadCheckbox("cbEnableZoomGestures", settings->isZoomGesturesEnabled());
@@ -201,7 +216,6 @@ void SettingsDialog::load() {
     loadCheckbox("cbStrokeFilterEnabled", settings->getStrokeFilterEnabled());
     loadCheckbox("cbDoActionOnStrokeFiltered", settings->getDoActionOnStrokeFiltered());
     loadCheckbox("cbTrySelectOnStrokeFiltered", settings->getTrySelectOnStrokeFiltered());
-    loadCheckbox("cbBigCursor", settings->isShowBigCursor());
     loadCheckbox("cbDarkTheme", settings->isDarkTheme());
     loadCheckbox("cbHideHorizontalScrollbar", settings->getScrollbarHideType() & SCROLLBAR_HIDE_HORIZONTAL);
     loadCheckbox("cbHideVerticalScrollbar", settings->getScrollbarHideType() & SCROLLBAR_HIDE_VERTICAL);
@@ -292,6 +306,19 @@ void SettingsDialog::load() {
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(get("cursorHighlightBorderWidth")),
                               settings->getCursorHighlightBorderWidth());
 
+    switch (settings->getStylusCursorType()) {
+        case STYLUS_CURSOR_NONE:
+            gtk_combo_box_set_active(GTK_COMBO_BOX(get("cbStylusCursorType")), 0);
+            break;
+        case STYLUS_CURSOR_BIG:
+            gtk_combo_box_set_active(GTK_COMBO_BOX(get("cbStylusCursorType")), 2);
+            break;
+        case STYLUS_CURSOR_DOT:
+        default:
+            gtk_combo_box_set_active(GTK_COMBO_BOX(get("cbStylusCursorType")), 1);
+            break;
+    }
+
     bool hideFullscreenMenubar = false;
     bool hideFullscreenSidebar = false;
     bool hidePresentationMenubar = false;
@@ -334,6 +361,7 @@ void SettingsDialog::load() {
     enableWithCheckbox("cbStrokeFilterEnabled", "cbTrySelectOnStrokeFiltered");
     enableWithCheckbox("cbDisableTouchOnPenNear", "boxInternalHandRecognition");
     customHandRecognitionToggled();
+    customStylusIconTypeChanged();
 
 
     SElement& touch = settings->getCustomElement("touch");
@@ -391,20 +419,25 @@ void SettingsDialog::load() {
     }
 
     switch (static_cast<int>(settings->getAudioSampleRate())) {
-        case 96100:
-            gtk_combo_box_set_active(GTK_COMBO_BOX(get("cbAudioSampleRate")), 1);
+        case 16000:
+            gtk_combo_box_set_active(GTK_COMBO_BOX(get("cbAudioSampleRate")), 0);
+            break;
+        case 96000:
+            gtk_combo_box_set_active(GTK_COMBO_BOX(get("cbAudioSampleRate")), 2);
             break;
         case 192000:
-            gtk_combo_box_set_active(GTK_COMBO_BOX(get("cbAudioSampleRate")), 2);
+            gtk_combo_box_set_active(GTK_COMBO_BOX(get("cbAudioSampleRate")), 3);
             break;
         case 44100:
         default:
-            gtk_combo_box_set_active(GTK_COMBO_BOX(get("cbAudioSampleRate")), 0);
+            gtk_combo_box_set_active(GTK_COMBO_BOX(get("cbAudioSampleRate")), 1);
             break;
     }
 
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(get("spAudioGain")), settings->getAudioGain());
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(get("spDefaultSeekTime")), settings->getDefaultSeekTime());
+
+    this->latexPanel.load(settings->latexSettings);
 }
 
 auto SettingsDialog::updateHideString(const string& hidden, bool hideMenubar, bool hideSidebar) -> string {
@@ -463,7 +496,6 @@ void SettingsDialog::save() {
     settings->setStrokeFilterEnabled(getCheckbox("cbStrokeFilterEnabled"));
     settings->setDoActionOnStrokeFiltered(getCheckbox("cbDoActionOnStrokeFiltered"));
     settings->setTrySelectOnStrokeFiltered(getCheckbox("cbTrySelectOnStrokeFiltered"));
-    settings->setShowBigCursor(getCheckbox("cbBigCursor"));
     settings->setDarkTheme(getCheckbox("cbDarkTheme"));
     settings->setTouchWorkaround(getCheckbox("cbTouchWorkaround"));
     settings->setExperimentalInputSystemEnabled(getCheckbox("cbNewInputSystem"));
@@ -502,6 +534,18 @@ void SettingsDialog::save() {
     GtkWidget* spCursorHighlightBorderWidth = get("cursorHighlightBorderWidth");
     settings->setCursorHighlightBorderWidth(gtk_spin_button_get_value(GTK_SPIN_BUTTON(spCursorHighlightBorderWidth)));
 
+    switch (gtk_combo_box_get_active(GTK_COMBO_BOX(get("cbStylusCursorType")))) {
+        case 0:
+            settings->setStylusCursorType(STYLUS_CURSOR_NONE);
+            break;
+        case 2:
+            settings->setStylusCursorType(STYLUS_CURSOR_BIG);
+            break;
+        case 1:
+        default:
+            settings->setStylusCursorType(STYLUS_CURSOR_DOT);
+            break;
+    }
 
     bool hideFullscreenMenubar = getCheckbox("cbHideFullscreenMenubar");
     bool hideFullscreenSidebar = getCheckbox("cbHideFullscreenSidebar");
@@ -516,6 +560,7 @@ void SettingsDialog::save() {
     settings->setMenubarVisible(getCheckbox("cbHideMenubarStartup"));
 
     settings->setDefaultSaveName(gtk_entry_get_text(GTK_ENTRY(get("txtDefaultSaveName"))));
+    // Todo(fabian): use Util::fromGtkFilename!
     char* uri = gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(get("fcAudioPath")));
     if (uri != nullptr) {
         settings->setAudioFolder(uri);
@@ -615,13 +660,16 @@ void SettingsDialog::save() {
     }
 
     switch (gtk_combo_box_get_active(GTK_COMBO_BOX(get("cbAudioSampleRate")))) {
-        case 1:
-            settings->setAudioSampleRate(96100.0);
+        case 0:
+            settings->setAudioSampleRate(16000.0);
             break;
         case 2:
+            settings->setAudioSampleRate(96000.0);
+            break;
+        case 3:
             settings->setAudioSampleRate(192000.0);
             break;
-        case 0:
+        case 1:
         default:
             settings->setAudioSampleRate(44100.0);
             break;
@@ -634,6 +682,8 @@ void SettingsDialog::save() {
     for (DeviceClassConfigGui* deviceClassConfigGui: this->deviceClassConfigs) {
         deviceClassConfigGui->saveSettings();
     }
+
+    this->latexPanel.save(settings->latexSettings);
 
     settings->transactionEnd();
 

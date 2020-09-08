@@ -22,6 +22,7 @@
 #include "Shadow.h"
 #include "Util.h"
 #include "XournalppCursor.h"
+#include "filesystem.h"
 
 #define PRELOAD_PAGES_BEFORE 3
 #define PRELOAD_PAGES_AFTER  4
@@ -365,10 +366,10 @@ void XournalView::pageSelected(size_t page) {
 
     Document* doc = control->getDocument();
     doc->lock();
-    Path file = doc->getEvMetadataFilename();
+    auto const& file = doc->getEvMetadataFilename();
     doc->unlock();
 
-    control->getMetadataManager()->storeMetadata(file.str(), page, getZoom());
+    control->getMetadataManager()->storeMetadata(file, page, getZoom());
 
     if (this->lastSelectedPage != npos && this->lastSelectedPage < this->viewPages.size()) {
         this->viewPages[this->lastSelectedPage]->setSelected(false);
@@ -530,10 +531,10 @@ void XournalView::zoomChanged() {
 
     Document* doc = control->getDocument();
     doc->lock();
-    Path file = doc->getEvMetadataFilename();
+    auto const& file = doc->getEvMetadataFilename();
     doc->unlock();
 
-    control->getMetadataManager()->storeMetadata(file.str(), getCurrentPage(), zoom->getZoomReal());
+    control->getMetadataManager()->storeMetadata(file, getCurrentPage(), zoom->getZoomReal());
 
     // Updates the Eraser's cursor icon in order to make it as big as the erasing area
     control->getCursor()->updateCursor();

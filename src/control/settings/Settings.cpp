@@ -9,6 +9,7 @@
 
 #include "ButtonConfig.h"
 #include "Util.h"
+#include "filesystem.h"
 #include "i18n.h"
 #define DEFAULT_FONT "Sans"
 #define DEFAULT_FONT_SIZE 12
@@ -22,7 +23,7 @@
     com = xmlNewComment((const xmlChar*)(var)); \
     xmlAddPrevSibling(xmlNode, com);
 
-Settings::Settings(Path filename): filename(std::move(filename)) { loadDefault(); }
+Settings::Settings(fs::path filepath): filepath(std::move(filepath)) { loadDefault(); }
 
 Settings::~Settings() {
     for (auto& i: this->buttonConfig) {
@@ -62,6 +63,8 @@ void Settings::loadDefault() {
     this->showSidebar = true;
     this->sidebarWidth = 150;
 
+    this->showToolbar = true;
+
     this->sidebarOnRight = false;
 
     this->scrollbarOnLeft = false;
@@ -69,7 +72,7 @@ void Settings::loadDefault() {
     this->menubarVisible = true;
 
     this->autoloadPdfXoj = true;
-    this->showBigCursor = false;
+    this->stylusCursorType = STYLUS_CURSOR_DOT;
     this->highlightPosition = false;
     this->cursorHighlightColor = 0x80FFFF00;  // Yellow with 50% opacity
     this->cursorHighlightRadius = 30.0;
@@ -311,6 +314,8 @@ void Settings::parseItem(xmlDocPtr doc, xmlNodePtr cur) {
         this->mainWndHeight = g_ascii_strtoll(reinterpret_cast<const char*>(value), nullptr, 10);
     } else if (xmlStrcmp(name, reinterpret_cast<const xmlChar*>("maximized")) == 0) {
         this->maximized = xmlStrcmp(value, reinterpret_cast<const xmlChar*>("true")) == 0;
+    } else if (xmlStrcmp(name, reinterpret_cast<const xmlChar*>("showToolbar")) == 0) {
+        this->showToolbar = xmlStrcmp(value, reinterpret_cast<const xmlChar*>("true")) == 0;
     } else if (xmlStrcmp(name, reinterpret_cast<const xmlChar*>("showSidebar")) == 0) {
         this->showSidebar = xmlStrcmp(value, reinterpret_cast<const xmlChar*>("true")) == 0;
     } else if (xmlStrcmp(name, reinterpret_cast<const xmlChar*>("sidebarWidth")) == 0) {
@@ -341,8 +346,8 @@ void Settings::parseItem(xmlDocPtr doc, xmlNodePtr cur) {
         this->presentationMode = xmlStrcmp(value, reinterpret_cast<const xmlChar*>("true")) == 0;
     } else if (xmlStrcmp(name, reinterpret_cast<const xmlChar*>("autoloadPdfXoj")) == 0) {
         this->autoloadPdfXoj = xmlStrcmp(value, reinterpret_cast<const xmlChar*>("true")) == 0;
-    } else if (xmlStrcmp(name, reinterpret_cast<const xmlChar*>("showBigCursor")) == 0) {
-        this->showBigCursor = xmlStrcmp(value, reinterpret_cast<const xmlChar*>("true")) == 0;
+    } else if (xmlStrcmp(name, reinterpret_cast<const xmlChar*>("stylusCursorType")) == 0) {
+        this->stylusCursorType = stylusCursorTypeFromString(reinterpret_cast<const char*>(value));
     } else if (xmlStrcmp(name, reinterpret_cast<const xmlChar*>("highlightPosition")) == 0) {
         this->highlightPosition = xmlStrcmp(value, reinterpret_cast<const xmlChar*>("true")) == 0;
     } else if (xmlStrcmp(name, reinterpret_cast<const xmlChar*>("cursorHighlightColor")) == 0) {
@@ -450,6 +455,13 @@ void Settings::parseItem(xmlDocPtr doc, xmlNodePtr cur) {
         this->doActionOnStrokeFiltered = xmlStrcmp(value, reinterpret_cast<const xmlChar*>("true")) == 0;
     } else if (xmlStrcmp(name, reinterpret_cast<const xmlChar*>("trySelectOnStrokeFiltered")) == 0) {
         this->trySelectOnStrokeFiltered = xmlStrcmp(value, reinterpret_cast<const xmlChar*>("true")) == 0;
+    } else if (xmlStrcmp(name, reinterpret_cast<const xmlChar*>("latexSettings.autoCheckDependencies")) == 0) {
+        this->latexSettings.autoCheckDependencies = xmlStrcmp(value, reinterpret_cast<const xmlChar*>("true")) == 0;
+    } else if (xmlStrcmp(name, reinterpret_cast<const xmlChar*>("latexSettings.globalTemplatePath")) == 0) {
+        std::string v(reinterpret_cast<char*>(value));
+        this->latexSettings.globalTemplatePath = fs::u8path(v);
+    } else if (xmlStrcmp(name, reinterpret_cast<const xmlChar*>("latexSettings.genCmd")) == 0) {
+        this->latexSettings.genCmd = reinterpret_cast<char*>(value);
     }
 
     xmlFree(name);
@@ -535,12 +547,12 @@ void Settings::loadButtonConfig() {
 auto Settings::load() -> bool {
     xmlKeepBlanksDefault(0);
 
-    if (!filename.exists()) {
-        g_warning("configfile does not exist %s\n", filename.c_str());
+    if (!fs::exists(filepath)) {
+        g_warning("configfile does not exist %s\n", filepath.string().c_str());
         return false;
     }
 
-    xmlDocPtr doc = xmlParseFile(filename.c_str());
+    xmlDocPtr doc = xmlParseFile(filepath.u8string().c_str());
 
     if (doc == nullptr) {
         g_warning("Settings::load:: doc == null, could not load Settings!\n");
@@ -549,14 +561,14 @@ auto Settings::load() -> bool {
 
     xmlNodePtr cur = xmlDocGetRootElement(doc);
     if (cur == nullptr) {
-        g_message("The settings file \"%s\" is empty", filename.c_str());
+        g_message("The settings file \"%s\" is empty", filepath.string().c_str());
         xmlFreeDoc(doc);
 
         return false;
     }
 
     if (xmlStrcmp(cur->name, reinterpret_cast<const xmlChar*>("settings"))) {
-        g_message("File \"%s\" is of the wrong type", filename.c_str());
+        g_message("File \"%s\" is of the wrong type", filepath.string().c_str());
         xmlFreeDoc(doc);
 
         return false;
@@ -703,9 +715,9 @@ void Settings::save() {
 
     WRITE_STRING_PROP(selectedToolbar);
 
-    auto lastSavePath = this->lastSavePath.str();
-    auto lastOpenPath = this->lastOpenPath.str();
-    auto lastImagePath = this->lastImagePath.str();
+    auto lastSavePath = this->lastSavePath.string();
+    auto lastOpenPath = this->lastOpenPath.string();
+    auto lastImagePath = this->lastImagePath.string();
     WRITE_STRING_PROP(lastSavePath);
     WRITE_STRING_PROP(lastOpenPath);
     WRITE_STRING_PROP(lastImagePath);
@@ -716,6 +728,8 @@ void Settings::save() {
     WRITE_INT_PROP(mainWndWidth);
     WRITE_INT_PROP(mainWndHeight);
     WRITE_BOOL_PROP(maximized);
+
+    WRITE_BOOL_PROP(showToolbar);
 
     WRITE_BOOL_PROP(showSidebar);
     WRITE_INT_PROP(sidebarWidth);
@@ -739,7 +753,9 @@ void Settings::save() {
     WRITE_STRING_PROP(presentationHideElements);
     WRITE_COMMENT("Which gui elements are hidden if you are in Presentation mode, separated by a colon (,)");
 
-    WRITE_BOOL_PROP(showBigCursor);
+    xmlNode = saveProperty("stylusCursorType", stylusCursorTypeToString(this->stylusCursorType), root);
+    WRITE_COMMENT("The cursor icon used with a stylus, allowed values are \"none\", \"dot\", \"big\"");
+
     WRITE_BOOL_PROP(highlightPosition);
     WRITE_UINT_PROP(cursorHighlightColor);
     WRITE_UINT_PROP(cursorHighlightBorderColor);
@@ -821,6 +837,14 @@ void Settings::save() {
     WRITE_BOOL_PROP(inputSystemTPCButton);
     WRITE_BOOL_PROP(inputSystemDrawOutsideWindow);
 
+    WRITE_BOOL_PROP(latexSettings.autoCheckDependencies);
+    // Inline WRITE_STRING_PROP(latexSettings.globalTemplatePath) since it
+    // breaks on Windows due to the native character representation being
+    // wchar_t instead of char
+    fs::path& p = latexSettings.globalTemplatePath;
+    xmlNode = saveProperty("latexSettings.globalTemplatePath", p.empty() ? "" : p.u8string().c_str(), root);
+    WRITE_STRING_PROP(latexSettings.genCmd);
+
     xmlNodePtr xmlFont = nullptr;
     xmlFont = xmlNewChild(root, nullptr, reinterpret_cast<const xmlChar*>("property"), nullptr);
     xmlSetProp(xmlFont, reinterpret_cast<const xmlChar*>("name"), reinterpret_cast<const xmlChar*>("font"));
@@ -837,7 +861,7 @@ void Settings::save() {
         saveData(root, p.first, p.second);
     }
 
-    xmlSaveFormatFileEnc(filename.c_str(), doc, "UTF-8", 1);
+    xmlSaveFormatFileEnc(filepath.u8string().c_str(), doc, "UTF-8", 1);
     xmlFreeDoc(doc);
 }
 
@@ -1018,15 +1042,15 @@ void Settings::setDrawDirModsRadius(int pixels) {
     save();
 }
 
+auto Settings::getStylusCursorType() const -> StylusCursorType { return this->stylusCursorType; }
 
-auto Settings::isShowBigCursor() const -> bool { return this->showBigCursor; }
-
-void Settings::setShowBigCursor(bool b) {
-    if (this->showBigCursor == b) {
+void Settings::setStylusCursorType(StylusCursorType type) {
+    if (this->stylusCursorType == type) {
         return;
     }
 
-    this->showBigCursor = b;
+    this->stylusCursorType = type;
+
     save();
 }
 
@@ -1337,21 +1361,21 @@ void Settings::setViewLayoutB2T(bool b2t) {
 
 auto Settings::getViewLayoutB2T() const -> bool { return this->layoutBottomToTop; }
 
-void Settings::setLastSavePath(Path p) {
+void Settings::setLastSavePath(fs::path p) {
     this->lastSavePath = std::move(p);
     save();
 }
 
-auto Settings::getLastSavePath() const -> Path const& { return this->lastSavePath; }
+auto Settings::getLastSavePath() const -> fs::path const& { return this->lastSavePath; }
 
-void Settings::setLastOpenPath(Path p) {
+void Settings::setLastOpenPath(fs::path p) {
     this->lastOpenPath = std::move(p);
     save();
 }
 
-auto Settings::getLastOpenPath() const -> Path const& { return this->lastOpenPath; }
+auto Settings::getLastOpenPath() const -> fs::path const& { return this->lastOpenPath; }
 
-void Settings::setLastImagePath(const Path& path) {
+void Settings::setLastImagePath(const fs::path& path) {
     if (this->lastImagePath == path) {
         return;
     }
@@ -1359,7 +1383,7 @@ void Settings::setLastImagePath(const Path& path) {
     save();
 }
 
-auto Settings::getLastImagePath() const -> Path const& { return this->lastImagePath; }
+auto Settings::getLastImagePath() const -> fs::path const& { return this->lastImagePath; }
 
 void Settings::setZoomStep(double zoomStep) {
     if (this->zoomStep == zoomStep) {
@@ -1408,6 +1432,16 @@ void Settings::setSidebarVisible(bool visible) {
         return;
     }
     this->showSidebar = visible;
+    save();
+}
+
+auto Settings::isToolbarVisible() const -> bool { return this->showToolbar; }
+
+void Settings::setToolbarVisible(bool visible) {
+    if (this->showToolbar == visible) {
+        return;
+    }
+    this->showToolbar = visible;
     save();
 }
 
