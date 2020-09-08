@@ -23,6 +23,9 @@
 #include "Util.h"
 #include "XournalppCursor.h"
 
+#define PRELOAD_PAGES_BEFORE 3
+#define PRELOAD_PAGES_AFTER  4
+
 XournalView::XournalView(GtkWidget* parent, Control* control, ScrollHandling* scrollHandling):
         scrollHandling(scrollHandling), control(control) {
     this->cache = new PdfCache(control->getSettings()->getPdfPageCacheSize());
@@ -88,16 +91,25 @@ void XournalView::staticLayoutPages(GtkWidget* widget, GtkAllocation* allocation
 auto XournalView::clearMemoryTimer(XournalView* widget) -> gboolean {
     GList* list = nullptr;
 
+    int i = 0;
+    size_t p = widget->getCurrentPage();
+
+    i = -1;
     for (auto&& page: widget->viewPages) {
-        if (page->getLastVisibleTime() > 0) {
-            list = g_list_insert_sorted(list, page, reinterpret_cast<GCompareFunc>(pageViewIncreasingClockTime));
-        }
+      ++i;
+      if (i >= (int) p - PRELOAD_PAGES_BEFORE &&
+          i <= (int) p + PRELOAD_PAGES_AFTER)
+        continue;
+
+      if (page->getLastVisibleTime() > 0) {
+        list = g_list_insert_sorted(list, page, reinterpret_cast<GCompareFunc>(pageViewIncreasingClockTime));
+      }
     }
 
     int pixel = 2884560;
     int firstPages = 4;
 
-    int i = 0;
+    i = 0;
 
     for (GList* l = g_list_last(list); l != nullptr; l = l->prev)  // older (higher time) to newer (lower time)
     {
@@ -376,6 +388,14 @@ void XournalView::pageSelected(size_t page) {
     control->updatePageNumbers(currentPage, pdfPage);
 
     control->updateBackgroundSizeButton();
+
+    // Load the pages around
+    for (int i = std::max (0, (int) page - PRELOAD_PAGES_BEFORE);
+         i <= std::min (viewPages.size () - 1, page + PRELOAD_PAGES_AFTER);
+         ++i) {
+      if (viewPages[i]->getBufferPixels () != 0) continue;
+      viewPages[i]->rerenderPage ();
+    }
 }
 
 auto XournalView::getControl() -> Control* { return control; }
