@@ -353,6 +353,19 @@
                           </object>
                         </child>
                         <child>
+                          <object class="GtkImageMenuItem" id="menuEditCopyAll">
+                            <property name="label" translatable="yes">Copy all</property>
+                            <property name="name">menuEditCopyAll</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="use_underline">True</property>
+                            <property name="use_stock">True</property>
+                            <signal name="activate" handler="ACTION_COPYALL" swapped="no"/>
+                            <accelerator key="c" signal="activate"
+                                         modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
+                          </object>
+                        </child>
+                        <child>
                           <object class="GtkImageMenuItem" id="menuEditPaste">
                             <property name="label">gtk-paste</property>
                             <property name="name">menuEditPaste</property>
@@ -362,6 +375,19 @@
                             <property name="use_stock">True</property>
                             <signal name="activate" handler="ACTION_PASTE" swapped="no"/>
                             <accelerator key="v" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkImageMenuItem" id="menuEditPasteInPlace">
+                            <property name="label" translatable="yes">Paste in place</property>
+                            <property name="name">menuEditPasteInPlace</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="use_underline">True</property>
+                            <property name="use_stock">True</property>
+                            <signal name="activate" handler="ACTION_PASTEINPLACE" swapped="no"/>
+                            <accelerator key="v" signal="activate"
+                                         modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
                           </object>
                         </child>
                         <child>
@@ -1189,6 +1215,17 @@
                             <property name="use_underline">True</property>
                             <signal name="activate" handler="ACTION_DELETE_LAYER" swapped="no"/>
                             <accelerator key="l" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="menuJournalCopyLayerToNextPage">
+                            <property name="name">menuJournalCopyLayerToNextPage</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">Copy Layer to Next Page</property>
+                            <property name="use_underline">True</property>
+                            <signal name="activate" handler="ACTION_COPY_LAYER_TO_NEXT_PAGE" swapped="no"/>
+                            <accelerator key="c" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_MOD1_MASK | GDK_CONTROL_MASK"/>
                           </object>
                         </child>
                         <child>

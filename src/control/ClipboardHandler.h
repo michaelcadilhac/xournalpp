@@ -28,7 +28,7 @@ public:
     virtual void clipboardPasteEnabled(bool enabled) = 0;
     virtual void clipboardPasteText(string text) = 0;
     virtual void clipboardPasteImage(GdkPixbuf* img) = 0;
-    virtual void clipboardPasteXournal(ObjectInputStream& in) = 0;
+    virtual void clipboardPasteXournal(ObjectInputStream& in, bool inplace = false) = 0;
     virtual void deleteSelection() = 0;
 
     virtual ~ClipboardListener();
@@ -40,7 +40,7 @@ public:
     virtual ~ClipboardHandler();
 
 public:
-    bool paste();
+    bool paste(bool inplace = false);
     bool cut();
     bool copy();
 
@@ -70,4 +70,6 @@ private:
     bool containsText = false;
     bool containsXournal = false;
     bool containsImage = false;
+
+    bool pasteinplace = false;
 };

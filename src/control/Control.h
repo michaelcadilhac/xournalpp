@@ -254,8 +254,9 @@ public:
 
 
     bool copy();
+    bool copyall();
     bool cut();
-    bool paste();
+    bool paste(bool inplace = false);
 
     void help();
 
@@ -277,7 +278,7 @@ public:
     virtual void clipboardPasteEnabled(bool enabled);
     virtual void clipboardPasteText(string text);
     virtual void clipboardPasteImage(GdkPixbuf* img);
-    virtual void clipboardPasteXournal(ObjectInputStream& in);
+    virtual void clipboardPasteXournal(ObjectInputStream& in, bool inplace = false);
     virtual void deleteSelection();
 
     void clipboardPaste(Element* e);

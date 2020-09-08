@@ -68,9 +68,12 @@ public:
     void addNewLayer();
     void deleteCurrentLayer();
     void copyCurrentLayer();
+    void copyCurrentLayerToNextPage();
     void moveCurrentLayer(bool up);
     void switchToLay(int layer, bool hideShow = false);
     void setLayerVisible(int layerId, bool visible);
+
+    bool clipboardCopyCurrentLayer();
 
     PageRef getCurrentPage();
     size_t getCurrentPageId() const;

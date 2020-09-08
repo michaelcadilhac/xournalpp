@@ -418,8 +418,14 @@ void Control::actionPerformed(ActionType type, ActionGroup group, GdkEvent* even
         case ACTION_COPY:
             copy();
             break;
+        case ACTION_COPYALL:
+            copyall();
+            break;
         case ACTION_PASTE:
             paste();
+            break;
+        case ACTION_PASTEINPLACE:
+            paste(true);
             break;
         case ACTION_SEARCH:
             clearSelectionEndText();
@@ -953,6 +959,11 @@ auto Control::copy() -> bool {
     return this->clipboardHandler->copy();
 }
 
+auto Control::copyall() -> bool {
+  layerController->clipboardCopyCurrentLayer ();
+  return true;
+}
+
 auto Control::cut() -> bool {
     if (this->win && this->win->getXournal()->cut()) {
         return true;
@@ -960,11 +971,12 @@ auto Control::cut() -> bool {
     return this->clipboardHandler->cut();
 }
 
-auto Control::paste() -> bool {
+auto Control::paste(bool inplace) -> bool {
+    // This can only paste text, for which inplace is not a concern.
     if (this->win && this->win->getXournal()->paste()) {
         return true;
     }
-    return this->clipboardHandler->paste();
+    return this->clipboardHandler->paste(inplace);
 }
 
 void Control::selectFillAlpha(bool pen) {
@@ -2485,7 +2497,10 @@ void Control::clipboardCutCopyEnabled(bool enabled) {
     fireEnableAction(ACTION_COPY, enabled);
 }
 
-void Control::clipboardPasteEnabled(bool enabled) { fireEnableAction(ACTION_PASTE, enabled); }
+void Control::clipboardPasteEnabled(bool enabled) {
+  fireEnableAction(ACTION_PASTE, enabled);
+  fireEnableAction(ACTION_PASTEINPLACE, enabled);
+}
 
 void Control::clipboardPasteText(string text) {
     Text* t = new Text();
@@ -2575,7 +2590,7 @@ void Control::clipboardPaste(Element* e) {
     win->getXournal()->setSelection(selection);
 }
 
-void Control::clipboardPasteXournal(ObjectInputStream& in) {
+void Control::clipboardPasteXournal(ObjectInputStream& in, bool inplace) {
     int pNr = getCurrentPageNo();
     if (pNr == -1 && win != nullptr) {
         return;
@@ -2634,20 +2649,23 @@ void Control::clipboardPasteXournal(ObjectInputStream& in) {
         }
         undoRedo->addUndoAction(std::move(pasteAddUndoAction));
 
-        double x = 0;
-        double y = 0;
-        // calculate x/y of paste target, see clipboardPaste(Element* e)
-        win->getXournal()->getPasteTarget(x, y);
+        if (not inplace) {
+          double x = 0;
+          double y = 0;
+          // calculate x/y of paste target, see clipboardPaste(Element* e)
+          win->getXournal()->getPasteTarget(x, y);
 
-        x = std::max(0.0, x - selection->getWidth() / 2);
-        y = std::max(0.0, y - selection->getHeight() / 2);
+          x = std::max(0.0, x - selection->getWidth() / 2);
+          y = std::max(0.0, y - selection->getHeight() / 2);
 
-        // calculate difference between current selection position and destination
-        auto dx = selection->getXOnView() - x;
-        auto dy = selection->getYOnView() - y;
+          // calculate difference between current selection position and destination
+          auto dx = selection->getXOnView() - x;
+          auto dy = selection->getYOnView() - y;
 
-        // for some reason selection moving is inverted (x -= dx,...), intended?
-        selection->moveSelection(dx, dy);
+          // for some reason selection moving is inverted (x -= dx,...), intended?
+          selection->moveSelection(dx, dy);
+        }
+
         // update all Elements (same procedure as moving a element selection by hand and releasing the mouse button)
         selection->mouseUp();
 

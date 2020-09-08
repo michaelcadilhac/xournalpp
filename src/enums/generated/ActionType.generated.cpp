@@ -69,8 +69,16 @@ auto ActionType_fromString(const string& value) -> ActionType {
         return ACTION_COPY;
     }
 
+    if (value == "ACTION_COPYALL") {
+        return ACTION_COPYALL;
+    }
+
     if (value == "ACTION_PASTE") {
         return ACTION_PASTE;
+    }
+
+    if (value == "ACTION_PASTEINPLACE") {
+        return ACTION_PASTEINPLACE;
     }
 
     if (value == "ACTION_SEARCH") {
@@ -152,6 +160,11 @@ auto ActionType_fromString(const string& value) -> ActionType {
     if (value == "ACTION_DELETE_LAYER") {
         return ACTION_DELETE_LAYER;
     }
+
+    if (value == "ACTION_COPY_LAYER_TO_NEXT_PAGE") {
+        return ACTION_COPY_LAYER_TO_NEXT_PAGE;
+    }
+
 
     if (value == "ACTION_PAPER_FORMAT") {
         return ACTION_PAPER_FORMAT;
@@ -643,8 +656,16 @@ auto ActionType_toString(ActionType value) -> string {
         return "ACTION_COPY";
     }
 
+    if (value == ACTION_COPYALL) {
+        return "ACTION_COPYALL";
+    }
+
     if (value == ACTION_PASTE) {
         return "ACTION_PASTE";
+    }
+
+    if (value == ACTION_PASTEINPLACE) {
+        return "ACTION_PASTEINPLACE";
     }
 
     if (value == ACTION_SEARCH) {
@@ -725,6 +746,10 @@ auto ActionType_toString(ActionType value) -> string {
 
     if (value == ACTION_DELETE_LAYER) {
         return "ACTION_DELETE_LAYER";
+    }
+
+    if (value == ACTION_COPY_LAYER_TO_NEXT_PAGE) {
+        return "ACTION_COPY_LAYER_TO_NEXT_PAGE";
     }
 
     if (value == ACTION_PAPER_FORMAT) {

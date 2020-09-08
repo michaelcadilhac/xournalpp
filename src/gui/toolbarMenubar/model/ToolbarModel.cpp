@@ -105,7 +105,7 @@ const char* TOOLBAR_INI_HEADER =
         " Available buttons:\n"
         " File: NEW,SAVE,OPEN,PRINT\n"
         "\n"
-        " Edit: CUT,COPY,PASTE,SEARCH,UNDO,REDO,INSERT_NEW_PAGE\n"
+        " Edit: CUT,COPY,COPYALL,PASTE,PASTEINPLACE,SEARCH,UNDO,REDO,INSERT_NEW_PAGE\n"
         "\n"
         " Navigation: GOTO_FIRST,GOTO_BACK,GOTO_NEXT,GOTO_LAST,GOTO_NEXT_ANNOTATED_PAGE\n"
         "\n"

@@ -69,6 +69,10 @@ auto LayerController::actionPerformed(ActionType type) -> bool {
             deleteCurrentLayer();
             return true;
 
+        case ACTION_COPY_LAYER_TO_NEXT_PAGE:
+            copyCurrentLayerToNextPage();
+            return true;
+
         case ACTION_FOOTER_LAYER:
             // This event is not fired anymore
             // This controller is called directly
@@ -170,6 +174,31 @@ void LayerController::deleteCurrentLayer() {
     fireRebuildLayerMenu();
 }
 
+void LayerController::copyCurrentLayerToNextPage() {
+    control->clearSelectionEndText();
+
+    PageRef p = getCurrentPage();
+    PageRef nextpage = control->getDocument()->getPage(selectedPage + 1);
+    if (!p || !nextpage) {
+        return;
+    }
+
+    Layer* l = p->getSelectedLayer();
+    Layer* cloned = l->clone();
+
+    nextpage->addLayer(cloned);
+
+    MainWindow* win = control->getWindow();
+    if (win) {
+        win->getXournal()->layerChanged(selectedPage + 1);
+    }
+
+    control->getUndoRedoHandler()->addUndoAction(std::make_unique<InsertLayerUndoAction>(this, nextpage, cloned, nextpage->getSelectedLayerId()));
+    control->resetShapeRecognizer();
+
+    fireRebuildLayerMenu();
+}
+
 void LayerController::moveCurrentLayer(bool up) {
     control->clearSelectionEndText();
 
@@ -242,6 +271,32 @@ void LayerController::copyCurrentLayer() {
     control->resetShapeRecognizer();
 
     fireRebuildLayerMenu();
+}
+
+auto LayerController::clipboardCopyCurrentLayer() -> bool {
+    control->clearSelectionEndText();
+
+    PageRef p = getCurrentPage();
+    size_t pageNo = control->getDocument()->indexOf(p);
+    XojPageView* view = control->getWindow()->getXournal()->getViewFor(pageNo);
+    if (!view || !p) {
+        return false;
+    }
+
+    int lId = p->getSelectedLayerId();
+    if (lId < 1) {
+        return false;
+    }
+    Layer* l = p->getSelectedLayer();
+    Layer* cloned = l->clone();
+
+    control->setClipboardHandlerSelection(
+      new EditSelection (control->getUndoRedoHandler (),
+                         *cloned->getElements (),
+                         view, p));
+    bool ret = control->copy();
+    control->setClipboardHandlerSelection(nullptr);
+    return ret;
 }
 
 auto LayerController::getCurrentPage() -> PageRef { return control->getDocument()->getPage(selectedPage); }

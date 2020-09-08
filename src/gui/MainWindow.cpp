@@ -661,9 +661,13 @@ void MainWindow::layerVisibilityChanged() {
     LayerController* lc = control->getLayerController();
 
     int layer = lc->getCurrentLayerId();
+    int page = lc->getCurrentPageId();
+    int maxPage = control->getDocument()->getPageCount();
     int maxLayer = lc->getLayerCount();
 
+
     control->fireEnableAction(ACTION_DELETE_LAYER, layer > 0);
+    control->fireEnableAction(ACTION_COPY_LAYER_TO_NEXT_PAGE, page < maxPage - 1);
     control->fireEnableAction(ACTION_GOTO_NEXT_LAYER, layer < maxLayer);
     control->fireEnableAction(ACTION_GOTO_PREVIOUS_LAYER, layer > 0);
     control->fireEnableAction(ACTION_GOTO_TOP_LAYER, layer < maxLayer);

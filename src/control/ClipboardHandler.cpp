@@ -32,7 +32,8 @@ ClipboardHandler::~ClipboardHandler() { g_signal_handler_disconnect(this->clipbo
 
 static GdkAtom atomXournal = gdk_atom_intern_static_string("application/xournal");
 
-auto ClipboardHandler::paste() -> bool {
+auto ClipboardHandler::paste(bool inplace) -> bool {
+    this->pasteinplace = inplace;
     if (this->containsXournal) {
         gtk_clipboard_request_contents(this->clipboard, atomXournal,
                                        reinterpret_cast<GtkClipboardReceivedFunc>(pasteClipboardContents), this);
@@ -264,7 +265,7 @@ void ClipboardHandler::pasteClipboardContents(GtkClipboard* clipboard, GtkSelect
 
     if (in.read(reinterpret_cast<const char*>(gtk_selection_data_get_data(selectionData)),
                 gtk_selection_data_get_length(selectionData))) {
-        handler->listener->clipboardPasteXournal(in);
+      handler->listener->clipboardPasteXournal(in, handler->pasteinplace);
     }
 }
 

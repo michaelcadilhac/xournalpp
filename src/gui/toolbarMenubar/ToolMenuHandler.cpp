@@ -330,7 +330,9 @@ void ToolMenuHandler::initToolItems() {
 
     ADD_STOCK_ITEM("CUT", ACTION_CUT, "edit-cut", _("Cut"));
     ADD_STOCK_ITEM("COPY", ACTION_COPY, "edit-copy", _("Copy"));
+    ADD_STOCK_ITEM("COPYALL", ACTION_COPYALL, "edit-copyall", _("Copy all"));
     ADD_STOCK_ITEM("PASTE", ACTION_PASTE, "edit-paste", _("Paste"));
+    ADD_STOCK_ITEM("PASTEINPLACE", ACTION_PASTEINPLACE, "edit-pasteinplace", _("Paste in place"));
 
     ADD_STOCK_ITEM("SEARCH", ACTION_SEARCH, "edit-find", _("Search"));
 
